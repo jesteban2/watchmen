@@ -21,7 +21,7 @@ object VideoStreamer extends App {
 
   val producerSettings =
     ProducerSettings(config, new StringSerializer, new ByteArraySerializer)
-      .withBootstrapServers("http://localhost:9092")
+      .withBootstrapServers("http://172.31.45.213:9092")
 
   val producerSink: Future[Done] =
     webcamSource
