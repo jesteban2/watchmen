@@ -43,5 +43,9 @@ libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-swing"     % "2.1.1"
 ) ++ bytedecoPresetLibs
 
+assemblyMergeStrategy in assembly := {
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case x => MergeStrategy.first
+}
 
 
