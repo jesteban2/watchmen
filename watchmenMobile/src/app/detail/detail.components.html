@@ -1,0 +1,20 @@
+
+<ActionBar title="Detail Video"></ActionBar>
+
+<GridLayout rows="*" columns="auto">
+    <GridLayout  width="100%" backgroundColor="#000000">
+        <StackLayout class="webview">
+            <WebView    [src]="videoUrl" class="card-img"></WebView>
+            <GridLayout width="100%" columns="auto,*" rows="auto,auto"
+                class="" verticalAlignment="center">
+                <Label row="0" col="1" class="item-name" textwrap="true"
+                    verticalAlignment="bottom"
+                    horizontalAlignment="left" [text]="address"></Label>
+                <Label row="1" col="1" class="item-name" textwrap="true"
+                    verticalAlignment="bottom"
+                    horizontalAlignment="left" [text]="zone"></Label>
+            </GridLayout>
+            
+        </StackLayout>
+    </GridLayout>
+</GridLayout>

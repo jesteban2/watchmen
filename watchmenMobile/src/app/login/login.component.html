@@ -1,0 +1,14 @@
+<FlexboxLayout>
+  <StackLayout class="form">
+    <Image src="~/app/images/italogo.png"></Image>
+
+    <TextField hint="Usuario"
+      autocorrect="false" autocapitalizationType="none" [(ngModel)]="user.id"
+      class="input input-border"></TextField>
+    <TextField hint="Password" secure="true" [(ngModel)]="user.password"
+      class="input input-border"></TextField>
+
+      <Button text='Sign in'
+      class="btn btn-primary" (tap)="submit()"></Button>
+    </StackLayout>
+</FlexboxLayout>
