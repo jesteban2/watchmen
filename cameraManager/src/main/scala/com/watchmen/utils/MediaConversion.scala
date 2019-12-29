@@ -23,7 +23,8 @@ object MediaConversion {
     def toFrame(mat: Mat): Frame = frameToMatConverter.get().convert(mat)
 
 
-    def toBytes(obj:Mat):Array[Byte] = {
+    def toBytes(frame:Frame):Array[Byte] = {
+      val obj=frameToMatConverter.get().convert(frame)
       val outputPointer:BytePointer = new BytePointer()
       opencv_imgcodecs.imencode(".jpg",obj,outputPointer)
       val arByte: Array[Byte]= new Array[Byte](outputPointer.capacity().toInt)
@@ -31,13 +32,12 @@ object MediaConversion {
       arByte
     }
 
-    def toBytes2(frame:Frame):Array[Byte] = {
+    def toBase64(frame:Frame):Array[Byte] = {
       val obj=frameToMatConverter.get().convert(frame)
       val outputPointer:BytePointer = new BytePointer()
       opencv_imgcodecs.imencode(".jpg",obj,outputPointer)
       val arByte: Array[Byte]= new Array[Byte](outputPointer.capacity().toInt)
       outputPointer.get(arByte)
-      //arByte
       val b64 = java.util.Base64.getEncoder.encode(arByte)
       b64
     }

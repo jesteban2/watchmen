@@ -1,0 +1,31 @@
+<ActionBar title="Video Monitor"></ActionBar>
+
+<GridLayout rows="*" columns="auto">
+
+<GridLayout  width="100%" backgroundColor="#000000">
+<ListView #listview [items]="items" separatorColor="transparent">
+    <ng-template let-item="item">
+        <StackLayout class="main">
+            <StackLayout class="content">
+                <WebView class="card-img" (tap)="showItem(item._id)"
+                    [src]="item.url"></WebView>
+                <GridLayout width="100%" columns="auto,*" rows="auto,auto"
+                    class="" verticalAlignment="center">
+                    <Label row="0" col="1" class="item-name" textwrap="true"
+                        verticalAlignment="bottom"
+                        horizontalAlignment="left" [text]="item.address"></Label>
+                    <Label row="1" col="1" class="item-name" textwrap="true"
+                        verticalAlignment="bottom"
+                        horizontalAlignment="left" [text]="item.zone"></Label>
+                </GridLayout>
+            </StackLayout>
+
+            <StackLayout width="100%" class="lineBreak"></StackLayout>
+
+        </StackLayout>
+    </ng-template>
+</ListView>
+</GridLayout>
+
+
+</GridLayout>

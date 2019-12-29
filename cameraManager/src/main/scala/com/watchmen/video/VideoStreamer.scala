@@ -7,17 +7,27 @@ import com.typesafe.config.ConfigFactory
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization._
 import akka.kafka.scaladsl.Producer
-import akka.stream.ActorMaterializer
+import akka.stream.{ActorMaterializer, ActorMaterializerSettings, Supervision}
+
 import scala.concurrent.Future
 import com.watchmen.utils._
 
 object VideoStreamer extends App {
   implicit val actorSystem: ActorSystem = ActorSystem()
-  implicit val actorMaterializer: ActorMaterializer = ActorMaterializer()
+  val decider: Supervision.Decider ={
+    case e: Exception =>
+      Supervision.Resume
+  }
+
+  implicit val actorMaterializer: ActorMaterializer = ActorMaterializer(
+    ActorMaterializerSettings(actorSystem).withSupervisionStrategy(decider)
+  )
   val config = ConfigFactory.load.getConfig("akka.kafka.producer")
 
   val imageDimensions = Dimensions(width = 640, height = 480)
-  val webcamSource = VideoReader.source(deviceId = "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4", dimensions = imageDimensions, frameRate = 20)
+  val webcamSource = VideoReader.source(deviceId = "rtsp://admin:A1234567@192.168.0.20:554/Streaming/channels/101", dimensions = imageDimensions, frameRate = 0)
+  //val webcamSource = VideoReader.source(deviceId = "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4", dimensions = imageDimensions, frameRate = 0)
+
 
   val producerSettings =
     ProducerSettings(config, new StringSerializer, new ByteArraySerializer)
@@ -25,10 +35,9 @@ object VideoStreamer extends App {
 
   val producerSink: Future[Done] =
     webcamSource
-      .map(MediaConversion.toBytes2)
-      //      .map(_.toJson)
-      //      .map(_.compactPrint)
-      .map(value => new ProducerRecord[String,Array[Byte]]("mtest01", value))
+      .map(MediaConversion.toBytes)
+    //.map(MediaConversion.toBase64)
+      .map(value => new ProducerRecord[String,Array[Byte]]("movieTestBytes", value))
       .runWith(Producer.plainSink(producerSettings))
   println("************ Message produced ************")
 

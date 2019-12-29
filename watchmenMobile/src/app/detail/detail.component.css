@@ -1,0 +1,17 @@
+.card-img {
+    width: 100%;
+    height: 85%;
+    margin-bottom: 2;
+}
+
+.landscape .card-img {
+    width: 100%;
+    height: 85%;
+    margin-bottom: 1;
+}
+
+.item-name {
+    font-size: 14;
+    font-weight: bold;
+    color: white;
+}

@@ -8,6 +8,7 @@ import akka.stream.scaladsl.Source
 import org.bytedeco.javacv.FrameGrabber.ImageMode
 import org.bytedeco.javacv.{Frame, FrameGrabber}
 import org.bytedeco.opencv.global.opencv_core._
+import org.bytedeco.javacv.FFmpegFrameGrabber
 
 
 object VideoReader {
@@ -52,8 +53,8 @@ object VideoReader {
                             bitsPerPixel: Int,
                             imageMode: ImageMode,
                             frameRate: Double
-                          ): FrameGrabber = synchronized {
-    val g = FrameGrabber.createDefault(deviceId)
+                          ): FFmpegFrameGrabber = synchronized {
+    val g = new FFmpegFrameGrabber(deviceId)
     g.setImageWidth(imageWidth)
     g.setImageHeight(imageHeight)
     g.setBitsPerPixel(bitsPerPixel)
