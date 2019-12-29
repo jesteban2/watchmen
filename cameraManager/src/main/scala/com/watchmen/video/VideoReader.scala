@@ -1,14 +1,13 @@
 package com.watchmen.video
 
 import akka.NotUsed
-import akka.actor.{ActorLogging, ActorSystem, DeadLetterSuppression, Props}
-import akka.stream.actor.ActorPublisher
-import akka.stream.actor.ActorPublisherMessage.{Cancel, Request}
+import akka.actor.ActorSystem
 import akka.stream.scaladsl.Source
+import akka.stream.stage.{GraphStage, GraphStageLogic, OutHandler}
+import akka.stream.{Attributes, Graph, Outlet, SourceShape}
 import org.bytedeco.javacv.FrameGrabber.ImageMode
-import org.bytedeco.javacv.{Frame, FrameGrabber}
+import org.bytedeco.javacv.{FFmpegFrameGrabber, Frame, FrameGrabber}
 import org.bytedeco.opencv.global.opencv_core._
-import org.bytedeco.javacv.FFmpegFrameGrabber
 
 
 object VideoReader {
@@ -27,22 +26,17 @@ object VideoReader {
               dimensions: Dimensions,
               bitsPerPixel: Int = CV_8U,
               imageMode: ImageMode = ImageMode.COLOR,
-              frameRate: Double
-            )(implicit system: ActorSystem): Source[Frame,NotUsed] = {
-    val props = Props(
-      new WebcamFramePublisher(
-        deviceId = deviceId,
-        imageWidth = dimensions.width,
-        imageHeight = dimensions.height,
-        bitsPerPixel = bitsPerPixel,
-        imageMode = imageMode,
-        frameRate = frameRate
-      )
+              frameRate: Double = 30
+            )(implicit system: ActorSystem): Source[Frame, NotUsed] = {
+    val sourceGraph: Graph[SourceShape[Frame], NotUsed] = new WebcamFrameSource(
+      deviceId,
+      dimensions.width,
+      dimensions.height,
+      bitsPerPixel,
+      imageMode,
+      frameRate
     )
-    val webcamActorRef = system.actorOf(props)
-    val webcamActorPublisher = ActorPublisher[Frame](webcamActorRef)
-
-    Source.fromPublisher(webcamActorPublisher)
+    Source.fromGraph(sourceGraph)
   }
 
   // Building a started grabber seems finicky if not synchronised; there may be some freaky stuff happening somewhere.
@@ -53,7 +47,7 @@ object VideoReader {
                             bitsPerPixel: Int,
                             imageMode: ImageMode,
                             frameRate: Double
-                          ): FFmpegFrameGrabber = synchronized {
+                          ): FrameGrabber = synchronized {
     val g = new FFmpegFrameGrabber(deviceId)
     g.setImageWidth(imageWidth)
     g.setImageHeight(imageHeight)
@@ -67,50 +61,41 @@ object VideoReader {
   /**
    * Actor that backs the Akka Stream source
    */
-  private class WebcamFramePublisher(
+  private class WebcamFrameSource(
                                       deviceId: String,
                                       imageWidth: Int,
                                       imageHeight: Int,
                                       bitsPerPixel: Int,
                                       imageMode: ImageMode,
                                       frameRate: Double
-                                    ) extends ActorPublisher[Frame] with ActorLogging {
+                                    ) extends GraphStage[SourceShape[Frame]] {
 
-    private implicit val ec = context.dispatcher
+    val out: Outlet[Frame] = Outlet("WebcamFrameSource")
 
-    // Lazy so that nothing happens until the flow begins
-    private lazy val grabber = buildGrabber(
-      deviceId = deviceId,
-      imageWidth = imageWidth,
-      imageHeight = imageHeight,
-      bitsPerPixel = bitsPerPixel,
-      imageMode = imageMode,
-      frameRate = frameRate
-    )
+    override val shape: SourceShape[Frame] = SourceShape(out)
 
-    def receive: Receive = {
-      case _: Request => emitFrames()
-      case Continue => emitFrames()
-      case Cancel => onCompleteThenStop()
-      case unexpectedMsg => log.warning(s"Unexpected message: $unexpectedMsg")
-    }
 
-    private def emitFrames(): Unit = {
-      if (isActive && totalDemand > 0) {
-        /*
-          Grabbing a frame is a blocking I/O operation, so we don't send too many at once.
-         */
-        grabFrame().foreach(onNext)
-        if (totalDemand > 0) {
-          self ! Continue
+    override def createLogic(inheritedAttributes: Attributes): GraphStageLogic =
+      new GraphStageLogic(shape) {
+        private lazy val grabber = buildGrabber(
+          deviceId = deviceId,
+          imageWidth = imageWidth,
+          imageHeight = imageHeight,
+          bitsPerPixel = bitsPerPixel,
+          imageMode = imageMode,
+          frameRate = frameRate
+        )
+
+        setHandler(out, new OutHandler {
+          override def onPull(): Unit = {
+            grabFrame().foreach(push(out, _))
+          }
+        })
+        private def grabFrame(): Option[Frame] = {
+          Option(grabber.grab())
         }
       }
-    }
 
-    private def grabFrame(): Option[Frame] = {
-      Option(grabber.grab())
-    }
   }
 
-  private case object Continue extends DeadLetterSuppression
 }
