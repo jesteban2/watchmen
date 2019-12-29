@@ -28,7 +28,7 @@ object VideoStreamer extends App {
   val devices = Settings(actorSystem).devices
   val imageDimensions = Dimensions(width = 640, height = 480)
   val webcamSource = devices.map( device => VideoReader.source(deviceId = device.url, dimensions = imageDimensions)
-    .map(MediaConversion.toBytes2)
+    .map(MediaConversion.toBytes)
     .map(s => new ProducerRecord[String,Array[Byte]](device.name, s))
   ).reduce((s1, s2) => Source.combine(s1, s2)(Merge(_)))
 
