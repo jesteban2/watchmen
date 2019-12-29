@@ -3,32 +3,42 @@ package com.watchmen.video
 import akka.Done
 import akka.actor.ActorSystem
 import akka.kafka.ProducerSettings
-import com.typesafe.config.ConfigFactory
+import akka.kafka.scaladsl.Producer
+import akka.stream.scaladsl.{Merge, Source}
+import akka.stream.{ActorMaterializer, ActorMaterializerSettings, Supervision}
+import com.watchmen.settings.Settings
+import com.watchmen.utils._
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization._
-import akka.kafka.scaladsl.Producer
-import akka.stream.ActorMaterializer
+
 import scala.concurrent.Future
-import com.watchmen.utils._
 
 object VideoStreamer extends App {
   implicit val actorSystem: ActorSystem = ActorSystem()
-  implicit val actorMaterializer: ActorMaterializer = ActorMaterializer()
-  val config = ConfigFactory.load.getConfig("akka.kafka.producer")
+  val decider: Supervision.Decider ={
+    case e: Exception =>
+      Supervision.Resume
+  }
 
+  implicit val actorMaterializer: ActorMaterializer = ActorMaterializer(
+    ActorMaterializerSettings(actorSystem).withSupervisionStrategy(decider)
+  )
+
+  val config = actorSystem.settings.config.getConfig("akka.kafka.producer")
+  val devices = Settings(actorSystem).devices
   val imageDimensions = Dimensions(width = 640, height = 480)
-  val webcamSource = VideoReader.source(deviceId = "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4", dimensions = imageDimensions, frameRate = 20)
+  val webcamSource = devices.map( device => VideoReader.source(deviceId = device.url, dimensions = imageDimensions)
+    .map(MediaConversion.toBytes2)
+    .map(s => new ProducerRecord[String,Array[Byte]](device.name, s))
+  ).reduce((s1, s2) => Source.combine(s1, s2)(Merge(_)))
+
 
   val producerSettings =
     ProducerSettings(config, new StringSerializer, new ByteArraySerializer)
-      .withBootstrapServers("http://172.31.45.213:9092")
+      .withBootstrapServers(Settings(actorSystem).kafka)
 
   val producerSink: Future[Done] =
     webcamSource
-      .map(MediaConversion.toBytes2)
-      //      .map(_.toJson)
-      //      .map(_.compactPrint)
-      .map(value => new ProducerRecord[String,Array[Byte]]("mtest01", value))
       .runWith(Producer.plainSink(producerSettings))
   println("************ Message produced ************")
 
