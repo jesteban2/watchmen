@@ -43,4 +43,6 @@ libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-swing"     % "2.1.1"
 ) ++ bytedecoPresetLibs
 
+mainClass in (Compile, run) := Some("com.watchmen.video.VideoStreamer")
+
 
