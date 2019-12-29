@@ -44,5 +44,6 @@ libraryDependencies ++= Seq(
 ) ++ bytedecoPresetLibs
 
 mainClass in (Compile, run) := Some("com.watchmen.video.VideoStreamer")
+mainClass in (Compile, packageBin) := Some("com.watchmen.video.VideoStreamer")
 
 
