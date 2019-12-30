@@ -1,3 +1,5 @@
+import BuildEnvPlugin.autoImport.{BuildEnv, buildEnv}
+
 name := "cameraManager"
 
 version := "0.1"
@@ -43,6 +45,15 @@ libraryDependencies ++= Seq(
   "org.bytedeco"            % "javacv"          % javacppVersion withSources() withJavadoc(),
   "org.scala-lang.modules" %% "scala-swing"     % "2.1.1"
 ) ++ bytedecoPresetLibs
+
+javaOptions in Universal ++= Seq(
+  "-Dconfig.resource=/" + ( buildEnv.value match {
+    case BuildEnv.Developement => "dev.conf"
+    case BuildEnv.Test => "test.conf"
+    case BuildEnv.Stage => "stage.conf"
+    case BuildEnv.Production => "prd.conf"
+  } )
+)
 
 
 
