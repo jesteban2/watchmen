@@ -19,7 +19,7 @@ const video = {
             sessionTimeout: 15000,
             protocol: ['roundrobin'],
             encoding: 'binary',
-            fromOffset: 'earliest'
+            fromOffset: process.env.KAFKA_FROMOFFSET
             };
         
         const consumerGroup = new kafka.ConsumerGroup(Object.assign({ id: 'cons-'+usrid }, options),topic)
