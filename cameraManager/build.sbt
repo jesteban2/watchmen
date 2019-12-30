@@ -4,6 +4,7 @@ version := "0.1"
 
 scalaVersion := "2.13.1"
 
+enablePlugins(JavaAppPackaging)
 
 val javacppVersion = "1.5.2"
 
@@ -43,9 +44,6 @@ libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-swing"     % "2.1.1"
 ) ++ bytedecoPresetLibs
 
-assemblyMergeStrategy in assembly := {
-  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-  case x => MergeStrategy.first
-}
+
 
 
