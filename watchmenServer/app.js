@@ -19,8 +19,8 @@ app.use(express.json())
 app.use(routes)
 
 https.createServer({
-    key: fs.readFileSync('./server_dev.key'),
-    cert: fs.readFileSync('./server_dev.crt')
+    key: fs.readFileSync('./server.key'),
+    cert: fs.readFileSync('./server.crt')
 },app).listen(port, () => {
     console.log(`Server running on port ${port} enviroment ${process.env.SERVER_ENV}`)
 })
