@@ -1,7 +1,7 @@
 export class Config {
-  static loginApiUrl = "http://192.168.1.106:3000/user/login";
+  static loginApiUrl = "https://10.0.2.2:8443/user/login";
   static token = "";
-  static usrCamApiUrl = "http://192.168.1.106:3000/user-device/search";
-  static cameraApiUrl = "http://192.168.1.106:3000/device/search";
-  static videoApiUrl = "http://192.168.1.106:3000/stream";
+  static usrCamApiUrl = "https://10.0.2.2:8443/user-device/search";
+  static cameraApiUrl = "https://10.0.2.2:8443/device/search";
+  static videoApiUrl = "https://10.0.2.2:8443/stream";
 }

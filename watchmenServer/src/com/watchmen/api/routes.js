@@ -6,6 +6,8 @@ const express = require('express')
 
 const router = express.Router()
 
+router.get('/',(req,res)=>{res.send("Hello")})
+
 router.get('/stream'+'/:topic'+'/:usrid',controller.playVideo)
 
 router.post('/user/create',controller.userCreate)
