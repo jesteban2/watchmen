@@ -1,7 +1,14 @@
+import * as app from 'application'
+
+const API = app.android ? 'https://10.0.2.2:8443' : 'https://localhost:8443'
+
 export class Config {
-  static loginApiUrl = "http://192.168.1.106:3000/user/login";
+  
+
+
+  static loginApiUrl = API+"/user/login";
   static token = "";
-  static usrCamApiUrl = "http://192.168.1.106:3000/user-device/search";
-  static cameraApiUrl = "http://192.168.1.106:3000/device/search";
-  static videoApiUrl = "http://192.168.1.106:3000/stream";
+  static usrCamApiUrl = API+"/user-device/search";
+  static cameraApiUrl = API+"/device/search";
+  static videoApiUrl = API+"/stream";
 }
