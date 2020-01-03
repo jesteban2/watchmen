@@ -33,13 +33,13 @@ object JavaCppPlugin extends AutoPlugin {
       javaCppVersion := Versions.javaCppVersion,
       javaCppPresetLibs := Seq.empty,
       libraryDependencies += {
-        "org.bytedeco" % "javacpp" % javaCppVersion.value jar
+        "org.bytedeco" % "javacpp" % javaCppVersion.value
       },
       javaCppPresetDependencies)
   }
 
   object Versions {
-    val javaCppVersion = "1.4.3"
+    val javaCppVersion = "1.5.2"
   }
 
   object autoImport {
@@ -58,7 +58,7 @@ object JavaCppPlugin extends AutoPlugin {
       val cppPresetVersion = buildPresetVersion(javaCppVersion.value)
       javaCppPresetLibs.value.flatMap {
         case (libName, libVersion) =>
-          val generic = "org.bytedeco.javacpp-presets" % libName % s"$libVersion-$cppPresetVersion" classifier ""
+          val generic = "org.bytedeco" % libName % s"$libVersion-$cppPresetVersion" classifier ""
           val platformSpecific = javaCppPlatform.value.map { platform =>
             "org.bytedeco" % libName % s"$libVersion-$cppPresetVersion" classifier platform
           }
