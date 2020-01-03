@@ -1,0 +1,38 @@
+{
+  "name": "cluster-search",
+  "description": "Library to help searching cluster nodes in Chef cookbooks",
+  "long_description": "Cluster Search\n==============\n\nDescription\n-----------\n\nCluster Search (cluster-search) is a simple cookbook library which simplify\nthe search of members of a cluster. It relies on Chef search with a size guard\n(to avoid inconsistencies during initial convergence) and allows a fall-back\nto any listing if user does not want to rely on searches (because of\nchef-solo for example).\n\nRequirements\n------------\n\nNone. Should work on any platform.\n\nUsage\n-----\n\nFirst, call `::Chef::Recipe.send(:include, ClusterSearch)` to be able to use\n`cluster_search` in your recipe.\n\nThen method `cluster_search` take one argument and an optional block.\nThe argument is a hash which could contain:\n\n- `role` (the name is configurable by attributes)  and `size` to use search.\n  Ex: `{ role: my_search, size: 2 }`\n- or `hosts` to use a static list. Ex: `{ hosts: [ some_node ] }`\n\nNote:\n\n- If both are defined, `hosts` is used.\n- Size check can be deactivated by not setting it or setting it to zero. It is\n  not recommended to disable it when searching for sibling as it can cause\n  configuration fluctuations during cluster convergence (first node of the\n  cluster to run Chef will find only itself, then two nodes, etc.).\n\nIt returns the list of the members of a cluster `hosts` and current node ID\n`my_id` for this cluster (or -1 it is not a member). By default (no block\npassed), the `hosts` result is a list of FQDN, extracted with `node['fqdn']`.\nBy passing the block `{ |n| n['ipaddress'] }`, you will get the list of IP\naddresses. And so on.\n\nFor search, we suppose that all members of a cluster have a common role in\ntheir run-list. For instance, all zookeeper nodes of a dedicated cluster for\nkafka could use role *zookeeper-kafka*. By defining `role` to\n*zookeeper-kafka* and configuring `size` to the expected size of the cluster,\nwe can find all the cluster members.\n\nWe can find input/output examples (used for test cases) in file\n*.kitchen.yml*.\n\nAttributes\n----------\n\nConfiguration is done by overriding default attributes. All configuration keys\nhave a default defined in [attributes/default.rb](attributes/default.rb).\nPlease read it to have a comprehensive view of what and how you can configure\nthis cookbook behavior.\n\nLibraries\n---------\n\n### default\n\nImplements `cluster_search` method.\n\nRecipes\n-------\n\n### default\n\nDo nothing\n\n### test\n\nRecipe used for testing.\n\nChangelog\n---------\n\nAvailable in [CHANGELOG](CHANGELOG).\n\nContributing\n------------\n\nPlease read carefully [CONTRIBUTING.md](CONTRIBUTING.md) before making a merge\nrequest.\n\nLicense and Author\n------------------\n\n- Author:: Samuel Bernard (<samuel.bernard@gmail.com>)\n\n```text\nCopyright (c) 2015-2016 Sam4Mobile, 2017-2018 Make.org\n\nLicensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\nhttp://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.\n```\n",
+  "maintainer": "Make.org",
+  "maintainer_email": "sre@make.org",
+  "license": "Apache-2.0",
+  "platforms": {
+    "centos": ">= 7.1"
+  },
+  "dependencies": {
+
+  },
+  "providing": {
+
+  },
+  "attributes": {
+
+  },
+  "recipes": {
+
+  },
+  "version": "1.5.0",
+  "source_url": "https://gitlab.com/chef-platform/cluster-search",
+  "issues_url": "https://gitlab.com/chef-platform/cluster-search/issues",
+  "privacy": false,
+  "chef_versions": [
+    [
+      ">= 12.14"
+    ]
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+
+  ]
+}

@@ -1,0 +1,2 @@
+include:
+  - https://gitlab.com/chef-platform/test-cookbook/raw/master/.gitlab-ci.yml

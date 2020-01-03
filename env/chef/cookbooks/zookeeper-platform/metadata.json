@@ -1,0 +1,39 @@
+{
+  "name": "zookeeper-platform",
+  "description": "Installs/Configures a Zookeeper cluster using systemd",
+  "long_description": "Zookeeper Platform\n==================\n\nDescription\n-----------\n\nApache ZooKeeper is an effort to develop and maintain an open-source server\nwhich enables highly reliable distributed coordination. Learn more about\nZooKeeper on <http://zookeeper.apache.org>.\n\nThis cookbook focuses on deploying a Zookeeper cluster via Chef.\n\nRequirements\n------------\n\n### Cookbooks and gems\n\nDeclared in [metadata.rb](metadata.rb) and in [Gemfile](Gemfile).\n\n### Platforms\n\nA *systemd* managed distribution:\n- RHEL Family 7, tested on Centos 7.2\n\nNote: it should work fine on Debian 8 but the official docker image does not\nallow systemd to work easily, so it could not be tested.\n\nUsage\n-----\n\n### Easy Setup\n\nCreate a role `zookeeper-platform` having `recipe['zookeeper-platform']` in its\nrunlist and setting `node['zookeeper-platform']['role']` to itself. Add this\nrole in the runlists of the nodes you want to use for your cluster. By default,\nyou need exactly 3 nodes.\n\nBy default, this cookbook installs *openjdk* from the official repositories\n*(openjdk 8 on centos 7)* in **systemd\\_service** recipe, just before\nlaunching the service. You can deactivate this behavior by setting\n`node['zookeeper-platform']['java']` to `\"\"`, or choose your package by setting\nthe package name in `node['zookeeper-platform']['java'][node[:platform]]`.\n\n### Search\n\nBy default, the *config* recipe use a search to find the members of a cluster.\nThe search is parametrized by a role name, defined in attribute\n`node['zookeeper-platform']['role']` which default to *zookeeper-platform*.\nNode having this role in their expanded runlist will be considered in the same\nzookeeper cluster. For safety reason, if search is used, you need to define\n`node['zookeeper-platform']['size']` (3 by default). The cookbook will return\n(with success) until the search return *size* nodes. This ensures the\nstability of the configuration during the initial startup of a cluster.\n\nIf you do not want to use search, it is possible to define\n`node['zookeeper-platform']['hosts']` with an array containing the hostnames of\nthe nodes of a zookeeper cluster. In this case, *size* attribute is ignored\nand search deactivated.\n\n### Test\n\nThis cookbook is fully tested through the installation of a working 3-nodes\ncluster in docker hosts. This uses kitchen (>= 1.5.0), docker (>= 1.10) and\na small monkey-patch.\n\nFor more information, see *.kitchen.yml* and *test* directory.\n\n### Local cluster\n\nYou can also use this cookbook to install a zookeeper cluster locally. By\nrunning `kitchen converge`, you will have a 3-nodes cluster available on your\nworkstation, each in its own docker host. You can then access it with:\n\n    zkCli.sh -server $(docker inspect \\\n      --format '{{.NetworkSettings.Networks.kitchen.IPAddress}}' \\\n      zookeeper-kitchen-01)\n\nAttributes\n----------\n\nConfiguration is done by overriding default attributes. All configuration keys\nhave a default defined in [attributes/default.rb](attributes/default.rb).\nPlease read it to have a comprehensive view of what and how you can configure\nthis cookbook behavior.\n\nRecipes\n-------\n\n### default\n\nRun *install*, *create\\_user*, *config* and *systemd\\_service* recipes, in that\norder.\n\n### install\n\nInstall zookeeper with *ark* cookbook.\n\n### create\\_user\n\nCreate zookeeper system user and group.\n\n### config\n\nGenerate nodes list by search or by using hosts attribute. Merge it with base\nconfiguration, then install *myid* and *zoo.cfg* files. Create work\ndirectories: for data and logs.\n\n### systemd\\_service\n\nInstall zookeeper service for systemd, enable and start it. Install *java*\npackage by default.\n\nResources/Providers\n-------------------\n\nNone.\n\nChangelog\n---------\n\nAvailable in [CHANGELOG](CHANGELOG).\n\nContributing\n------------\n\nPlease read carefully [CONTRIBUTING.md](CONTRIBUTING.md) before making a merge\nrequest.\n\nLicense and Author\n------------------\n\n- Author:: Samuel Bernard (<samuel.bernard@gmail.com>)\n\n```text\nCopyright (c) 2015-2016 Sam4Mobile, 2017-2018 Make.org\n\nLicensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.\n```\n",
+  "maintainer": "Make.org",
+  "maintainer_email": "sre@make.org",
+  "license": "Apache-2.0",
+  "platforms": {
+    "centos": ">= 7.1"
+  },
+  "dependencies": {
+    "ark": ">= 0.0.0",
+    "cluster-search": ">= 0.0.0"
+  },
+  "providing": {
+
+  },
+  "attributes": {
+
+  },
+  "recipes": {
+
+  },
+  "version": "1.7.0",
+  "source_url": "https://gitlab.com/chef-platform/zookeeper-platform",
+  "issues_url": "https://gitlab.com/chef-platform/zookeeper-platform/issues",
+  "privacy": false,
+  "chef_versions": [
+    [
+      ">= 12.0"
+    ]
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+
+  ]
+}

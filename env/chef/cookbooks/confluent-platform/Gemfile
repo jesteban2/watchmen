@@ -1,0 +1,10 @@
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
+gem 'berkshelf'
+gem 'foodcritic'
+gem 'kitchen-docker_cli'
+gem 'rspec-core'
+gem 'rubocop'
+gem 'test-kitchen'
