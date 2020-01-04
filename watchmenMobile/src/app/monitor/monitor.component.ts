@@ -1,10 +1,15 @@
-import {Component, OnInit, OnDestroy} from "@angular/core"
+import {Component, OnInit, OnDestroy, ViewChild, ElementRef} from "@angular/core"
 import { Router,ActivatedRoute, NavigationExtras } from "@angular/router";
-import { Page } from "tns-core-modules/ui/page";
+import { Page } from "ui/page";
 
 import {Camera} from "../shared/camera/camera.model"
 import {CameraService} from "../shared/camera/camera.service"
 import { Config } from "../shared/config"
+
+import { registerElement } from "nativescript-angular/element-registry";
+registerElement("VideoPlayer", () => require("../videoplayer").Video);
+
+
 
 @Component({
     selector: "ns-monitor",
@@ -15,12 +20,11 @@ import { Config } from "../shared/config"
 })
 export class MonitorComponent implements OnInit, OnDestroy{
     private _paramSubscription: any
-    webViewSrc = "https://docs.nativescript.org/";
-    
     usrid:String
     devids:String
-    items: Array<Camera>;
+    items: Array<Camera>
     item:Camera
+    videoPlayer: any
     constructor(private router: Router,
                 private cameraService:CameraService,
                 private activatedRoute:ActivatedRoute,
@@ -35,6 +39,27 @@ export class MonitorComponent implements OnInit, OnDestroy{
             console.log(devid)
             this.getCameraDetail(devid)
         })
+       /* this.item = new Camera()
+        this.item._id="1"
+        this.item.url='https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4'
+        this.items.push(this.item)
+
+        this.item._id="2"
+        this.item.url='https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4'
+        this.items.push(this.item)
+
+        this.item._id="3"
+        this.item.url='https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4'
+        this.items.push(this.item)
+
+        this.item._id="4"
+        this.item.url='https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4'
+        this.items.push(this.item)
+
+        this.item._id="5"
+        this.item.url='https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4'
+        this.items.push(this.item)*/
+
     }
 
     ngOnInit(){
@@ -75,6 +100,22 @@ export class MonitorComponent implements OnInit, OnDestroy{
                 "zone": selItem.zone
             }}
         this.router.navigate(["detail/"],navigationExtras)
+    }
+
+    ngAfterViewInit() {
+        this.videoPlayer = this.page.getViewById('nativeVideoPlayer');
+    }
+
+    play() {
+        this.videoPlayer.play();
+    }
+
+    pause() {
+        this.videoPlayer.pause();
+    }
+
+    seekToTime() {
+        this.videoPlayer.seekToTime(30);
     }
     
 }

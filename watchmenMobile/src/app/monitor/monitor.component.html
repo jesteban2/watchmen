@@ -1,14 +1,16 @@
+
 <ActionBar title="Video Monitor"></ActionBar>
 
 <GridLayout rows="*" columns="auto">
 
 <GridLayout  width="100%" backgroundColor="#000000">
-<ListView #listview [items]="items" separatorColor="transparent">
-    <ng-template let-item="item">
-        <StackLayout class="main">
+
+
             <StackLayout class="content">
-                <WebView class="card-img" (tap)="showItem(item._id)"
-                    [src]="item.url"></WebView>
+
+                    
+				<VideoPlayer id="nativeVideoPlayer" autoplay="true" class="card-img" controls="false"
+				src="http://192.168.1.106:3000/stream/ffmpeg"></VideoPlayer>
                 <GridLayout width="100%" columns="auto,*" rows="auto,auto"
                     class="" verticalAlignment="center">
                     <Label row="0" col="1" class="item-name" textwrap="true"
@@ -22,10 +24,9 @@
 
             <StackLayout width="100%" class="lineBreak"></StackLayout>
 
-        </StackLayout>
-    </ng-template>
-</ListView>
 </GridLayout>
 
 
+
 </GridLayout>
+

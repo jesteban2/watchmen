@@ -1,9 +1,9 @@
 const kafka = require("kafka-node")
 const { Transform } = require("stream")
 
-const video = {
+const videoStream = {
 
-    play: function(req,res,next){
+    play: async function(req,res,next){
         const topic = req.params.topic
         const usrid = req.params.usrid
     
@@ -14,15 +14,14 @@ const video = {
 
         const options = {
             // connect directly to kafka broker (instantiates a KafkaClient)
-            kafkaHost: process.env.KAFKA_HOST,
-            groupId: 'group-'+usrid,
+            kafkaHost: 'localhost:9092',
+            groupId: 'group-prueba',
             autoCommitIntervalMs: 500,
             sessionTimeout: 15000,
             protocol: ['roundrobin'],
             encoding: 'binary',
-            fromOffset: process.env.KAFKA_FROMOFFSET
-        }
-
+            fromOffset: 'earliest'
+            };
         const trans = new Transform({
             objectMode:true,
             decodeStrings:true,
@@ -33,9 +32,8 @@ const video = {
                 callback(null,Buffer.from(msg,'binary'))
             }
         })
-        
-        const consumerGroupStream = new kafka.ConsumerGroupStream(Object.assign({ id: 'cons-'+usrid }, options)
-                                                                    ,topic)
+
+        const consumerGroupStream = new kafka.ConsumerGroupStream(Object.assign({ id: 'cons-prueba' }, options),'movieTestBytes')
         consumerGroupStream.on('message',function onMessage(message){})
         .pipe(trans).pipe(res)
 
@@ -43,7 +41,11 @@ const video = {
             console.error(error);
             res.send(error);
         })
+
+        
     }
 }
 
-module.exports = video
+//router.get('/:devid'+'/:usrid', auth, async(req, res) => {
+
+module.exports = videoStream

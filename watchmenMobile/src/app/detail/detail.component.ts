@@ -32,13 +32,17 @@ export class DetailComponent implements OnInit, OnDestroy{
 
     }
     ngOnInit(): void{
-        this.page.actionBarHidden=true
+        //this.page.actionBarHidden=true
     }
 
     ngOnDestroy(){
         if (this._paramSubscription) {
             this._paramSubscription.unsubscribe();
         };
+      }
+    
+      onNavBtnTap(){
+          this.page.frame.goBack()
       }
 
 }

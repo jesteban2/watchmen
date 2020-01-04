@@ -24,7 +24,6 @@
     "nativescript-angular": "~8.20.0",
     "nativescript-orientation": "^2.2.4",
     "nativescript-ui-chart": "^7.0.0",
-    "nativescript-videoplayer": "^4.2.1",
     "reflect-metadata": "~0.1.12",
     "rxjs": "^6.4.0",
     "tns-core-modules": "~6.2.0",

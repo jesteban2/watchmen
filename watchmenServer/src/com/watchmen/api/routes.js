@@ -10,6 +10,10 @@ router.get('/',(req,res)=>{res.send("Hello")})
 
 router.get('/stream'+'/:topic'+'/:usrid',controller.playVideo)
 
+router.get('/stream/video',controller.playVideoStream)
+
+router.get('/stream/ffmpeg',controller.playVideoffmpeg)
+
 router.post('/user/create',controller.userCreate)
 
 router.post('/user/login',controller.userLogin)

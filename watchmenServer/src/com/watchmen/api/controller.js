@@ -1,6 +1,8 @@
 'use strict'
 
 const video = require('../services/video/service/video')
+const videoStream = require('../services/video/service/videoStream')
+const videoffmpeg = require('../services/video/service/videoffmpeg')
 const user = require('../services/user/service/user') 
 const device = require('../services/device/service/device')
 const userDevice = require('../services/userDevice/service/userDevice')
@@ -9,6 +11,18 @@ const controllers = {
 
     playVideo: function(req,res){
         video.play(req,res, function(err,stream){
+            if(err){res.send(err)}
+        })
+    },
+
+    playVideoStream: function(req,res){
+        videoStream.play(req,res, function(err,stream){
+            if(err){res.send(err)}
+        })
+    },
+
+    playVideoffmpeg: function(req,res){
+        videoffmpeg.play(req,res, function(err,stream){
             if(err){res.send(err)}
         })
     },

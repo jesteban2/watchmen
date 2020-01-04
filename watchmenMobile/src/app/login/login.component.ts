@@ -15,8 +15,8 @@ export class LoginComponent implements OnInit{
   constructor(private router: Router,private userService: UserService, private page:Page) {
     this.user = new User();
     //this.user.email="moncho@correo.org";
-    /*this.user.id="8104624";
-    this.user.password="watchmen1234*";*/
+    this.user.id="8104624";
+    this.user.password="watchmen1234*";
   }
   ngOnInit() {
     this.page.actionBarHidden = true;
@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit{
   }
   
   login() {
-    //this.router.navigate(["/monitor"]);
+   // this.router.navigate(["/monitor",'8104624','abcde']);
     this.userService.login(this.user)
       .subscribe(
         () => this.router.navigate(["/middleware",this.user.id]),
