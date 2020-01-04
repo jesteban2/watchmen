@@ -1,0 +1,112 @@
+#
+# Copyright (c) 2015-2016 Sam4Mobile, 2017-2018 Make.org
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+---
+# Customize Kitchen with some monkey patching:
+# - Suites scheduler
+#   <% require "#{File.dirname(__FILE__)}/test/kitchen_command.rb" %>
+# - nodes generation from suites definition
+#   <% require "#{File.dirname(__FILE__)}/test/kitchen_sandbox.rb" %>
+# - Create kitchen network if missing
+#   <% net_test = '! docker network ls | grep "kitchen" >/dev/null 2>&1' %>
+#   <% net_create = 'docker network create --driver bridge kitchen' %>
+#   <% `if #{net_test}; then #{net_create}; fi` %>
+
+driver:
+  name: docker_cli
+  volume: /sys/fs/cgroup:/sys/fs/cgroup:ro
+  command: /sbin/init
+  network: kitchen
+  security_opt: seccomp=unconfined
+  skip_preparation: true
+  build_pull: true
+
+transport:
+  name: docker_cli
+
+provisioner:
+  name: chef_zero
+  chef_license: accept-no-persist
+  always_update_cookbooks: true
+  product_name: chef
+  install_strategy: skip
+  no_proxy: 'localhost, kafka-kitchen-01'
+
+platforms:
+  - name: centos-7
+    driver_config:
+      image: chefplatform/centos-systemd-kitchen
+
+suites:
+  # Install a stand-alone zookeeper
+  - name: zookeeper
+    driver:
+      hostname: zookeeper-kafka.kitchen
+      container_name: zookeeper-kafka
+    run_list:
+      - recipe[zookeeper-platform]
+    attributes:
+      zookeeper-platform:
+        hosts: zookeeper-kafka.kitchen
+        package_retries: 1
+        jvm_opts:
+          -Xmx128m:
+
+  # True tests begin here
+# Generate different types of nodes
+<% { 'kafka' => 2, 'registry' => 1, 'rest' => 1 }.each do |name, n| %>
+  <% ("01".."#{n}").each do |i| %>
+  - name: <%= name %>-<%= i %>
+    driver:
+      hostname: <%= name %>-kitchen-<%= i %>.kitchen
+      container_name: <%= name %>-kitchen-<%= i %>
+    run_list:
+      - role[<%= name %>-kitchen]
+      <%= name == 'kafka' ? '- recipe[test-cp::connect]' : '' %>
+      <%= name == 'kafka' ? '- role[connect-kitchen]' : '' %>
+      - recipe[test-cp::lazyconfig]
+    attributes:
+      confluent-platform:
+        package_retries: 1
+        kafka:
+          auto_restart: true
+          cli_opts:
+            -Xmx4g: nil
+            -Xms4g: nil
+            -Xmx384m: ''
+            -Xms64m: ''
+        registry:
+          auto_restart: true
+          cli_opts:
+            -Xmx1g: nil
+            -Xms1g: nil
+            -Xmx128m: ''
+            -Xms64m: ''
+        rest:
+          auto_restart: true
+          cli_opts:
+            -Xmx1g: nil
+            -Xms1g: nil
+            -Xmx128m: ''
+            -Xms64m: ''
+      test-cp: # test lazyness
+        kafka:
+          leader.imbalance.check.interval.seconds: 600
+        registry:
+          kafkastore.timeout.ms: 1000
+        rest:
+          simpleconsumer.pool.size.max: 20
+  <% end %>
+<% end %>

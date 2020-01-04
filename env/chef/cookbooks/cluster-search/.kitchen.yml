@@ -1,0 +1,111 @@
+#
+# Copyright (c) 2015-2016 Sam4Mobile, 2017-2018 Make.org
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+driver:
+  name: docker_cli
+  volume: /sys/fs/cgroup:/sys/fs/cgroup:ro
+  command: /sbin/init
+  security_opt: seccomp=unconfined
+  skip_preparation: true
+  build_pull: true
+
+transport:
+  name: docker_cli
+  product_name: chef
+  install_strategy: skip
+
+provisioner:
+  name: chef_zero
+  always_update_cookbooks: true
+
+platforms:
+  - name: centos-7
+    driver_config:
+      image: sbernard/centos-systemd-kitchen
+
+suites:
+  - name: default
+    driver:
+      hostname: node-01
+      container_name: cluster-search-1-kitchen
+    run_list:
+      - role[search]
+    attributes:
+      cluster-search: # Test cases
+        test-cases:
+          - # Empty configuration
+            - {}
+            - "cluster_search: empty argument"
+          - # Using hosts to list the cluster nodes, current node not included
+            - { hosts: [ other_node ] }
+            - '{"hosts"=>["other_node"], "my_id"=>-1}'
+          - # Using hosts to list the cluster nodes, current node included
+            - { hosts: [ node-00, node-01 ] }
+            - '{"hosts"=>["node-00", "node-01"], "my_id"=>2}'
+          - # Using hosts to list the cluster nodes, size is ignored
+            - { hosts: [ other_node ], size: 42 }
+            - '{"hosts"=>["other_node"], "my_id"=>-1}'
+          - # Remove duplicate
+            - { hosts: [ node, node, node ] }
+            - '{"hosts"=>["node"], "my_id"=>-1}'
+          - # hosts with single host as String
+            - { hosts: node }
+            - '{"hosts"=>["node"], "my_id"=>-1}'
+          - # Using hosts but specifying a role which is in current run_list
+            - { hosts: [ node-02 ], role: search }
+            - "cluster_search: should I be listed in 'hosts'?"
+          - # Search role with size too large (waiting for nodes to pop)
+            - { role: some, size: 1 }
+            - ''
+          - # Search role with size too small
+            - { role: search, size: -1 }
+            - "cluster_search: too many servers, configuration problem?"
+          - # Search role with correct size
+            - { role: search, size: 2 }
+            - '{"hosts"=>["node-01", "node-02"], "my_id"=>1}'
+          - # Search role with size undefined
+            - { role: search }
+            - '{"hosts"=>["node-01", "node-02"], "my_id"=>1}'
+          - # Search role with size zero
+            - { role: search, size: 0 }
+            - '{"hosts"=>["node-01", "node-02"], "my_id"=>1}'
+          - # Search role with no result
+            - { role: some, size: 0 }
+            - '{"hosts"=>[], "my_id"=>-1}'
+          - # Correct search but output ip instead of fqdn
+            - { role: ip, size: 2, fun: 'proc { |n| n["ipaddress"] }' }
+            - '{"hosts"=>["10.0.0.2", "10.0.0.4"], "my_id"=>-1}'
+          - # Correct search with output fqdn-platform, including myself
+            - { role: search, size: 0,
+                fun: 'proc { |n| n[:fqdn] + "-" + n[:platform] }' }
+            - '{"hosts"=>["node-01-centos", "node-02-centos"], "my_id"=>1}'
+          - # Correct search but error because custom proc gives bad attribute
+            - { role: search, size: 2, fun: 'proc { |n| n["badthing"] }' }
+            - 'Invalid nil result(s) while applying proc'
+
+  - name: with_search_attribute
+    driver:
+      hostname: node-01 # simplify test cases
+      container_name: cluster-search-2-kitchen
+    run_list:
+      - role[search]
+    attributes:
+      cluster-search:
+        search-attribute: 'cs_role'
+        test-cases:
+          - # Search role with size zero
+            - { cs_role: search, size: 0 }
+            - '{"hosts"=>["node-01", "node-02"], "my_id"=>1}'

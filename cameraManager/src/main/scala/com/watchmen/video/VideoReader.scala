@@ -7,34 +7,26 @@ import akka.stream.stage.{GraphStage, GraphStageLogic, OutHandler}
 import akka.stream.{Attributes, Graph, Outlet, SourceShape}
 import org.bytedeco.javacv.FrameGrabber.ImageMode
 import org.bytedeco.javacv.{FFmpegFrameGrabber, Frame, FrameGrabber}
-import org.bytedeco.opencv.global.opencv_core._
 
 
 object VideoReader {
-  /**
-   * Builds a Frame [[Source]]
-   *
-   * @param deviceId device ID for the webcam
-   * @param dimensions
-   * @param bitsPerPixel
-   * @param imageMode
-   * @param system ActorSystem
-   * @return a Source of [[Frame]]s
-   */
+
   def source(
               deviceId: String,
               dimensions: Dimensions,
-              bitsPerPixel: Int = CV_8U,
+              pixelFormat: Int = -1,
               imageMode: ImageMode = ImageMode.COLOR,
-              frameRate: Double = 30
+              frameRate: Double = 30,
+              options: Map[String, String] = Map.empty
             )(implicit system: ActorSystem): Source[Frame, NotUsed] = {
     val sourceGraph: Graph[SourceShape[Frame], NotUsed] = new WebcamFrameSource(
       deviceId,
       dimensions.width,
       dimensions.height,
-      bitsPerPixel,
+      pixelFormat,
       imageMode,
-      frameRate
+      frameRate,
+      options
     )
     Source.fromGraph(sourceGraph)
   }
@@ -44,16 +36,18 @@ object VideoReader {
                             deviceId: String,
                             imageWidth: Int,
                             imageHeight: Int,
-                            bitsPerPixel: Int,
+                            pixelFormat: Int,
                             imageMode: ImageMode,
-                            frameRate: Double
+                            frameRate: Double,
+                            options: Map[String, String]
                           ): FrameGrabber = synchronized {
     val g = new FFmpegFrameGrabber(deviceId)
     g.setImageWidth(imageWidth)
     g.setImageHeight(imageHeight)
-    g.setBitsPerPixel(bitsPerPixel)
+    g.setPixelFormat(pixelFormat)
     g.setImageMode(imageMode)
     g.setFrameRate(frameRate)
+    options.foreach{ case (k,v) => g.setOption(k, v) }
     g.start()
     g
   }
@@ -65,9 +59,10 @@ object VideoReader {
                                       deviceId: String,
                                       imageWidth: Int,
                                       imageHeight: Int,
-                                      bitsPerPixel: Int,
+                                      pixelFormat: Int,
                                       imageMode: ImageMode,
-                                      frameRate: Double
+                                      frameRate: Double,
+                                      options: Map[String, String]
                                     ) extends GraphStage[SourceShape[Frame]] {
 
     val out: Outlet[Frame] = Outlet("WebcamFrameSource")
@@ -81,9 +76,10 @@ object VideoReader {
           deviceId = deviceId,
           imageWidth = imageWidth,
           imageHeight = imageHeight,
-          bitsPerPixel = bitsPerPixel,
+          pixelFormat = pixelFormat,
           imageMode = imageMode,
-          frameRate = frameRate
+          frameRate = frameRate,
+          options = options
         )
 
         setHandler(out, new OutHandler {

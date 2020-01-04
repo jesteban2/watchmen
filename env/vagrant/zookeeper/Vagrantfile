@@ -1,0 +1,29 @@
+  Vagrant.configure("2") do |config|
+
+    config.vm.box = "centos/7"
+
+    config.vm.network :private_network, ip: '10.1.1.2'
+    config.vm.hostname = 'zookeeper1'
+
+     config.vm.provider "virtualbox" do |vb|
+      # Customize the amount of memory on the VM:
+      vb.memory = "2048"
+    end
+
+    config.vm.provision "chef_zero" do |chef|
+      chef.channel = "stable"
+      chef.version = "15.1.36"
+      chef.nodes_path = "~/chef-base/nodes"
+      chef.cookbooks_path = "../../chef/cookbooks"
+      chef.environments_path = '../../chef/environments'
+      chef.environment = "development"
+      chef.custom_config_path = "CustomConfiguration.chef"
+      
+      chef.log_level = "info"
+      chef.run_list = %w{ 
+        recipe[wmzookeeper::default]
+      }
+      
+    end
+
+  end
