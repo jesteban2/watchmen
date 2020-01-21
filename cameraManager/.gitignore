@@ -3,6 +3,7 @@
 bin/
 target/
 build/
+null/
 
 # eclipse
 build
@@ -29,3 +30,4 @@ build
 
 #general
 *.class
+
