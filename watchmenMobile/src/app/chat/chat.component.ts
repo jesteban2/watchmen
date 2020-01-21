@@ -12,8 +12,7 @@ import { Config } from "../shared/config";
 import { Observable, of, interval, from } from "rxjs";
 import { take, takeWhile } from "rxjs/operators"
 
-var inter = interval(3000)
-
+var inter = interval(5000)
 
 @Component({
     moduleId: module.id,
@@ -28,7 +27,6 @@ export class ChatComponent implements OnInit, OnDestroy{
     list: ListView
     textfield: TextField
     chats:Array<Message>
-    poll: Boolean
 
     constructor(private router: Router,private messageService: MessageService, private page:Page) {
         this.chats=[]
@@ -67,7 +65,7 @@ export class ChatComponent implements OnInit, OnDestroy{
         this.messageService.sendMessage(Config.usrid,message)
         .subscribe(
             () => {
-//                this.getChats()
+                this.messageHandle(message)
             },
             (exception) => {
                 if(exception.error && exception.error.description) {
@@ -88,12 +86,9 @@ export class ChatComponent implements OnInit, OnDestroy{
             this.messageService.getMessages(Config.usrid)
             .subscribe(
                 (data) => {
-                    console.log("data: "+data)
                     messages = <any>data
-                    messages.forEach(element => {
-                        
-                        this.pushChat(<Message>(JSON.parse(<any>element)))
-                        
+                    messages.forEach(element => {    
+                        this.messageHandle(<Message>(JSON.parse(<any>element)))    
                     })
                     let count = this.list.items.length
                     this.scroll(count)
@@ -110,9 +105,9 @@ export class ChatComponent implements OnInit, OnDestroy{
           
     }
 
-    pushChat(msg: Message){
-        console.log("Mensaje: "+msg)
-        this.chats.push(msg)
+    messageHandle(msg: Message){
+        const found = this.chats.find(elem=>elem._id==msg._id)
+        if(!found){this.chats.push(msg)}
     }
 
     filter(sender) {
@@ -121,6 +116,24 @@ export class ChatComponent implements OnInit, OnDestroy{
         }
         else {
             return "them"
+        }
+    }
+
+    msg_class(sender) {
+        if (sender == Config.usrid) {
+            return "me_msg_text"
+        }
+        else {
+            return "them_msg_text"
+        }
+    }
+
+    msg_class_sname(sender) {
+        if (sender == Config.usrid) {
+            return "me_msg_text_name"
+        }
+        else {
+            return "them_msg_text_name"
         }
     }
 
