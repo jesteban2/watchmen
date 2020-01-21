@@ -6,6 +6,7 @@ const videoffmpeg = require('../services/video/service/videoffmpeg')
 const user = require('../services/user/service/user') 
 const device = require('../services/device/service/device')
 const userDevice = require('../services/userDevice/service/userDevice')
+const message = require('../services/message/service/message')
 
 const controllers = {
 
@@ -77,6 +78,20 @@ const controllers = {
 
     userDeviceSearch: function(req,res){
         userDevice.search(req,res, function(err,stream){
+            if(err){res.send(err)}
+        })
+    },
+
+    messagePost: function(req,res){
+        message.post(req,res, function(err,stream){
+            if(err){
+                console.log("Este fue el error")
+                res.send(err)}
+        })
+    },
+
+    messageGet: function(req,res){
+        message.get(req,res, function(err,stream){
             if(err){res.send(err)}
         })
     }

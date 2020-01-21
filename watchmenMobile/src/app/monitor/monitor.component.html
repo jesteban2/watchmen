@@ -1,18 +1,36 @@
 
-<ActionBar title="Video Monitor"></ActionBar>
+<ActionBar title="Video Monitor">
+    <ActionItem (tap)="logOut()" ios.systemIcon="14" ios.position="right"
+                android.systemIcon="ic_menu_close_clear_cancel" android.position="actionBar">
+    </ActionItem>
+</ActionBar>
+
+<TabView selectedTabTextColor="white" 
+        tabBackgroundColor="black"
+         tabTextFontSize="16"
+         androidSelectedTabHighlightColor="white"
+         selectedIndex="0" >
+    <StackLayout *tabItem="{title: 'Monitor', textTransform: 'capitalize'}" >
+        
+    
+    
+
 
 <GridLayout rows="*" columns="auto">
-
 <GridLayout  width="100%" backgroundColor="#000000">
-
-
+<ListView #listview [items]="items" separatorColor="transparent">
+    <ng-template let-item="item">
+        <StackLayout class="main">
             <StackLayout class="content">
-
-                    
-				<VideoPlayer id="nativeVideoPlayer" autoplay="true" class="card-img" controls="false"
-				src="http://192.168.1.106:3000/stream/ffmpeg"></VideoPlayer>
+               <WebView [id]="item._id" class="card-img" (tap)="showItem($event,item._id)"
+               (loaded)="onWebViewLoaded($event,item._id)"></WebView>     
+				<!--VideoPlayer id="nativeVideoPlayer" autoplay="true" class="card-img" controls="true" debug="true" fill="true"
+				src="http://192.168.1.63:3000/stream/ffmpeg"></VideoPlayer--->
                 <GridLayout width="100%" columns="auto,*" rows="auto,auto"
                     class="" verticalAlignment="center">
+                    <Label [text]="categoryIcon('Picture')" row="0"
+                                col="0" rowSpan="2"
+                                class="fa category-icon" (tap)="takePicture(item._id)"></Label>
                     <Label row="0" col="1" class="item-name" textwrap="true"
                         verticalAlignment="bottom"
                         horizontalAlignment="left" [text]="item.address"></Label>
@@ -24,9 +42,14 @@
 
             <StackLayout width="100%" class="lineBreak"></StackLayout>
 
+        </StackLayout>
+    </ng-template>
+</ListView>
 </GridLayout>
-
-
-
 </GridLayout>
+</StackLayout>
 
+<StackLayout *tabItem="{title: 'Mensajes', textTransform: 'capitalize'}">
+        <ns-chat></ns-chat>
+</StackLayout>
+</TabView>

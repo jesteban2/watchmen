@@ -1,14 +1,20 @@
 
-<ActionBar>
-    <NavigationButton text="Atras" android.systemIcon="ic_menu_back" tap="onNavBtnTap"></NavigationButton>
+<ActionBar title="Video Monitor">
+    <ActionItem (tap)="logOut()" ios.systemIcon="14" ios.position="right"
+                android.systemIcon="ic_menu_close_clear_cancel" android.position="actionBar">
+    </ActionItem>
+    <!--NavigationButton text="Atras" android.systemIcon="ic_menu_back" tap="onNavBtnTap"></NavigationButton-->
 </ActionBar>
 
 <GridLayout rows="*" columns="auto">
     <GridLayout  width="100%" backgroundColor="#000000">
-        <StackLayout class="webview">
-            <WebView    [src]="videoUrl" class="card-img"></WebView>
+        <StackLayout class="content">
+            <WebView [id]="videoId"   [src]="videoUrl" class="card-img" (loaded)="onLoadFinished($event)"></WebView>
             <GridLayout width="100%" columns="auto,*" rows="auto,auto"
                 class="" verticalAlignment="center">
+                <Label [text]="categoryIcon('Picture')" row="0"
+                                col="0" rowSpan="2"
+                                class="fa category-icon" (tap)="takePicture(videoId)"></Label>
                 <Label row="0" col="1" class="item-name" textwrap="true"
                     verticalAlignment="bottom"
                     horizontalAlignment="left" [text]="address"></Label>

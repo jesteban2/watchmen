@@ -9,18 +9,22 @@ const video = {
     
         const head = {
             'Content-Type': 'multipart/x-mixed-replace; boundary=myframe'
+
         }
         res.writeHead(206, head)
+        //res.send(`<meta name='viewport' content='width=device-width, initial-scale=1'>`)
 
         const options = {
             // connect directly to kafka broker (instantiates a KafkaClient)
             kafkaHost: process.env.KAFKA_HOST,
-            groupId: 'group-'+usrid,
+            groupId: 'group-'+usrid+'-'+topic,
             autoCommitIntervalMs: 500,
             sessionTimeout: 15000,
             protocol: ['roundrobin'],
             encoding: 'binary',
             fromOffset: process.env.KAFKA_FROMOFFSET
+            //auto_offset_reset =process.env.KAFKA_FROMOFFSET, 
+            //enable_auto_commit=False
         }
 
         const trans = new Transform({
@@ -34,7 +38,7 @@ const video = {
             }
         })
         
-        const consumerGroupStream = new kafka.ConsumerGroupStream(Object.assign({ id: 'cons-'+usrid }, options)
+        const consumerGroupStream = new kafka.ConsumerGroupStream(Object.assign({ id: 'cons-'+usrid+'-'+topic }, options)
                                                                     ,topic)
         consumerGroupStream.on('message',function onMessage(message){})
         .pipe(trans).pipe(res)
@@ -42,6 +46,10 @@ const video = {
         consumerGroupStream.on('error', function onError(error) {
             console.error(error);
             res.send(error);
+        })
+
+        req.on('close',function(){
+            consumerGroupStream.close(function(err,result){console.log("consumer closed")})
         })
     }
 }

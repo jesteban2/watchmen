@@ -32,4 +32,8 @@ router.post('/user-device/create',auth,controller.userDeviceCreate)
 
 router.get('/user-device/search'+'/:usrid',auth,controller.userDeviceSearch)
 
+router.post('/message'+'/:usrid',auth,controller.messagePost)
+
+router.get('/message'+'/:usrid',auth,controller.messageGet)
+
 module.exports = router

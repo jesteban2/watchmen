@@ -6,16 +6,18 @@ const videoStream = {
     play: async function(req,res,next){
         const topic = req.params.topic
         const usrid = req.params.usrid
-    
+       // res.write(`<meta name='viewport' content='width=device-width, initial-scale=1.0'>`)
+       console.log(res.locals)
         const head = {
             'Content-Type': 'multipart/x-mixed-replace; boundary=myframe'
         }
         res.writeHead(206, head)
+        
 
         const options = {
             // connect directly to kafka broker (instantiates a KafkaClient)
             kafkaHost: 'localhost:9092',
-            groupId: 'group-prueba',
+            groupId: 'group-otro',
             autoCommitIntervalMs: 500,
             sessionTimeout: 15000,
             protocol: ['roundrobin'],
@@ -33,7 +35,7 @@ const videoStream = {
             }
         })
 
-        const consumerGroupStream = new kafka.ConsumerGroupStream(Object.assign({ id: 'cons-prueba' }, options),'movieTestBytes')
+        const consumerGroupStream = new kafka.ConsumerGroupStream(Object.assign({ id: 'cons-otro' }, options),'movieTestBytes')
         consumerGroupStream.on('message',function onMessage(message){})
         .pipe(trans).pipe(res)
 
@@ -42,10 +44,11 @@ const videoStream = {
             res.send(error);
         })
 
+        req.on('close',function(){
+            consumerGroupStream.close(function(err,result){console.log("consumer closed")})
+        })
         
     }
 }
-
-//router.get('/:devid'+'/:usrid', auth, async(req, res) => {
 
 module.exports = videoStream

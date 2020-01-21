@@ -9,6 +9,7 @@ import { NativeScriptHttpClientModule } from "nativescript-angular/http-client";
 import { MonitorComponent } from "./monitor/monitor.Component";
 import { DetailComponent } from "./detail/detail.component";
 import { MiddlewareComponent } from "./middleware/middleware.component";
+import { ChatComponent } from "./chat/chat.component"
 import { registerElement } from "nativescript-angular/element-registry";
 
 // Uncomment and add to NgModule imports if you need to use two-way binding
@@ -34,6 +35,7 @@ import { registerElement } from "nativescript-angular/element-registry";
         LoginComponent,
         MonitorComponent,
         DetailComponent,
+        ChatComponent,
         MiddlewareComponent
     ],
     providers: [],

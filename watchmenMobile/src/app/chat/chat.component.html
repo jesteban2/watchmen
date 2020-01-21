@@ -1,0 +1,21 @@
+<StackLayout>
+
+    <ListView height="80%" margin-bottom="50" padding="5" id="list" [items]="chats">
+        <ng-template let-item="item">
+            <GridLayout columns="*" rows="auto" class="msg">
+                <StackLayout [class]="filter(item.sender_id)" orientation="horizontal" [horizontalAlignment]="align(item.sender_id)">
+                    <!--Image [visibility]="showImage(item.sender)" class="authorimg" stretch="aspectFill" height="30" width="30" verticalAlignment="top" src="~/images/k1.png" col="1"></Image-->
+                    <Label [text]='item.value' class="msg_text" textWrap="true" verticalAlignment="top"></Label>
+                </StackLayout>
+            </GridLayout>
+        </ng-template>
+    </ListView>
+
+    <StackLayout height="20%">
+        <GridLayout columns="*,auto" style="padding: 10">
+            <TextField id="textfield" class="chatTextField" row="0" col="0" [(ngModel)]="message"></TextField>
+            <Button #btn class="chatBtn" row="0" col="1" text="enviar" (tap)=chat(message)></Button>
+        </GridLayout>
+    </StackLayout>
+
+</StackLayout>

@@ -27,8 +27,9 @@ class Mp4Segmenter extends Transform {
     }
 
     _findFtyp(chunk) {
-        //console.log('findFtyp');
+        console.log('findFtyp');
         if (chunk[4] !== 0x66 || chunk[5] !== 0x74 || chunk[6] !== 0x79 || chunk[7] !== 0x70) {
+            console.log('cannot find ftyp');
             throw new Error('cannot find ftyp');
         }
         const chunkLength = chunk.length;
@@ -47,8 +48,9 @@ class Mp4Segmenter extends Transform {
     }
 
     _findMoov(chunk) {
-        //console.log('findMoov');
+        console.log('findMoov');
         if (chunk[4] !== 0x6D || chunk[5] !== 0x6F || chunk[6] !== 0x6F || chunk[7] !== 0x76) {
+            console.log('cannot find moov');
             throw new Error('cannot find moov');
         }
         const chunkLength = chunk.length;
@@ -79,6 +81,7 @@ class Mp4Segmenter extends Transform {
             //did not previously parse a complete segment
             if (this._foundSegment === false) {
                 console.log(chunk.slice(0, 20).toString());
+                console.log('immediately failed to find moof');
                 throw new Error('immediately failed to find moof');
             } else {
                 //have to do a string search for moof or mdat and start loop again,
@@ -160,6 +163,7 @@ class Mp4Segmenter extends Transform {
             //first pass to ensure start of mdat and get its size, most likely chunk will not contain entire mdat
             if (chunk[4] !== 0x6D || chunk[5] !== 0x64 || chunk[6] !== 0x61 || chunk[7] !== 0x74) {
                 console.log(chunk.slice(0, 20).toString());
+                console.log("cannot find mdat");
                 throw new Error('cannot find mdat');
             }
             const chunkLength = chunk.length;

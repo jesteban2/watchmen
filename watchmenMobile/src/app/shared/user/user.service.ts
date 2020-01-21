@@ -10,10 +10,16 @@ import { Config } from "../config";
 export class UserService {
     constructor(private http: HttpClient) { }
 
-    getCommonHeaders() {
+    getLoginHeaders() {
         return {
             "Content-Type": "application/json"
-            //"Authorization": Config.authHeader
+        }
+    }
+
+    getCommonHeaders() {
+        return {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer "+Config.token
         }
     }
 
@@ -29,13 +35,40 @@ export class UserService {
                 usrid: user.id,
                 password: user.password
             }),
-            { headers: this.getCommonHeaders() }
+            { headers: this.getLoginHeaders() }
         ).pipe(
             map(response => response),
             tap(data => {
                 Config.token = (<any>data).user.tokens[0].token
+                Config.usrid = (<any>data).user.usrid
+                Config.usrnam = (<any>data).user.name
             }),
             catchError(this.handleErrors)
         );
     }
+
+    logOut(){
+        return this.http.post(
+            Config.logoutApiUrl,
+            '',
+            { headers: this.getCommonHeaders() }
+        ).pipe(
+            map(response => response),
+            tap(data => {}),
+            catchError(this.handleErrors)
+        );
+    }
+
+    checkLogged(){
+        return this.http.get(
+            Config.checkLoggedApiUrl,
+            { headers: this.getCommonHeaders() }
+        ).pipe(
+            map(response => response),
+            tap(data => {}),
+            catchError(this.handleErrors)
+        );
+    }
+
+
 }
