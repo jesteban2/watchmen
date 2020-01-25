@@ -12,7 +12,7 @@ import { Config } from "../shared/config";
 import { Observable, of, interval, from } from "rxjs";
 import { take, takeWhile } from "rxjs/operators"
 
-var inter = interval(5000)
+var inter = interval(3000)
 
 @Component({
     moduleId: module.id,
@@ -65,7 +65,7 @@ export class ChatComponent implements OnInit, OnDestroy{
         this.messageService.sendMessage(Config.usrid,message)
         .subscribe(
             () => {
-                this.messageHandle(message)
+                //this.messageHandle(message)
             },
             (exception) => {
                 if(exception.error && exception.error.description) {

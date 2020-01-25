@@ -59,10 +59,10 @@ export class MonitorComponent implements OnInit, OnDestroy{
 
         this.checkAuth()
 
-       // this.page.actionBarHidden = true;
+       // this.page.actionBarHidden = true;;
        permissions.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, "Permiso requerido para almacenar las fotos que se tomen")
         .then( () => {
-            console.log("Woo Hoo, I have the power! TO WRITE");
+            console.log("Woo Hoo, I have the power!! TO WRITE");
         })
         .catch( () => {
             console.log("Uh oh, no permissions - plan B time! ");

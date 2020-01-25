@@ -12,6 +12,9 @@ const message = {
             const producer = new Producer(client)
             const message = new Message(req.body)
             const topic = "msgroup_1"
+
+            console.log("Connecting to kafka server: "+process.env.KAFKA_HOST)
+            console.log("sending message: \n"+JSON.stringify(message))
             
 
             producer.send([{ topic: topic, messages: JSON.stringify(message)}], function (err,result) {
