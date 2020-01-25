@@ -7,8 +7,9 @@ const message = {
     post: function(req,res,next){
         try {
             const Producer = kafka.Producer
-            var Client = kafka.KafkaClient
-            const client = new Client(process.env.KAFKA_HOST)
+            //var Client = kafka.KafkaClient
+            //const client = new Client(process.env.KAFKA_HOST)
+            const client = new kafka.KafkaClient({kafkaHost: process.env.KAFKA_HOST});
             const producer = new Producer(client)
             const message = new Message(req.body)
             const topic = "msgroup_1"
@@ -28,12 +29,12 @@ const message = {
             
             
             producer.on('error', function (err) {
-              console.log('error', err);
-              res.status(400).send(err)
+              console.log('producer error \n', err);
+             // res.status(400).send(err)
             });
             
         } catch (error) {
-            console.log("error: "+error)
+            console.log("general post message error: \n"+error)
          //   res.status(400).send(error)
         }
     },
