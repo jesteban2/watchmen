@@ -19,7 +19,7 @@ const message = {
 
             producer.send([{ topic: topic, messages: JSON.stringify(message)}], function (err,result) {
                 if(err){
-                    console.log(err)
+                    console.log("Error sending message \n"+err)
                     res.status(400).send(err)
                 }else{
                     res.status(200).send({message})
@@ -34,7 +34,7 @@ const message = {
             
         } catch (error) {
             console.log("error: "+error)
-            res.status(400).send(error)
+         //   res.status(400).send(error)
         }
     },
 
