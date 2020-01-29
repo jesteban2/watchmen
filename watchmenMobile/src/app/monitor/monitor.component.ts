@@ -1,25 +1,24 @@
 import {Component, OnInit, OnDestroy} from "@angular/core"
-import { Router,ActivatedRoute, NavigationExtras } from "@angular/router";
+import { Router,ActivatedRoute, NavigationExtras } from "@angular/router"
 import { Page } from "ui/page";
 
 import {Camera} from "../shared/camera/camera.model"
 import {CameraService} from "../shared/camera/camera.service"
 import { Config } from "../shared/config"
 
-import { registerElement } from "nativescript-angular/element-registry";
-registerElement("VideoPlayer", () => require("../videoplayer").Video);
+import { registerElement } from "nativescript-angular/element-registry"
+registerElement("VideoPlayer", () => require("../videoplayer").Video)
 
-import { isAndroid, isIOS } from "tns-core-modules/platform";
+import { isAndroid, isIOS } from "tns-core-modules/platform"
 
-import * as dialogs from "tns-core-modules/ui/dialogs";
+import * as dialogs from "tns-core-modules/ui/dialogs"
 
-import { Cscreenshot } from 'nativescript-cscreenshot';
-import { ImageSource } from "tns-core-modules/image-source";
-import * as fs from "tns-core-modules/file-system";
+import { Cscreenshot } from 'nativescript-cscreenshot'
+import { ImageSource } from "tns-core-modules/image-source"
+import * as fs from "tns-core-modules/file-system"
 
 import * as permissions from 'nativescript-permissions'
-import { UserService } from "./../shared/user/user.service";
-
+import { UserService } from "./../shared/user/user.service"
 
 declare var android: any;
 
@@ -60,16 +59,26 @@ export class MonitorComponent implements OnInit, OnDestroy{
         this.checkAuth()
 
        // this.page.actionBarHidden = true;;
-       permissions.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, "Permiso requerido para almacenar las fotos que se tomen")
-        .then( () => {
-            console.log("Woo Hoo, I have the power!! TO WRITE");
-        })
-        .catch( () => {
-            console.log("Uh oh, no permissions - plan B time! ");
-        });
+       if(isAndroid){
+            permissions.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, "Permiso requerido para almacenar las fotos que se tomen")
+            .then( () => {
+                console.log("Woo Hoo, I have the power!! TO WRITE");
+            })
+            .catch( () => {
+                console.log("Uh oh, no permissions - plan B time! ");
+            })
+        }
     }
 
     ngOnDestroy(){
+        console.log("vista destruida**********************")
+
+        /*this.items.forEach(item=>{
+            const webview = <any>this.page.getViewById(item._id.toString())
+            webview.src = ""
+        })*/
+
+
         if (this._paramSubscription) {
             this._paramSubscription.unsubscribe();
         };
@@ -112,6 +121,7 @@ export class MonitorComponent implements OnInit, OnDestroy{
     ngAfterViewInit() {
        // this.videoPlayer = this.page.getViewById('nativeVideoPlayer');
         console.log("View init")
+       
     }
 
     
@@ -122,9 +132,19 @@ export class MonitorComponent implements OnInit, OnDestroy{
         const webview = webargs.object
         webview.src = selItem.url
         if(isAndroid){
+        //    webview.android.setWebChromeClient(new android.webkit.WebChromeClient())
             webview.android.getSettings().setUseWideViewPort(true)
             webview.android.getSettings().setLoadWithOverviewMode(true)
             webview.android.getSettings().setDisplayZoomControls(false)
+
+/*            webview.android.getSettings().setSupportZoom(true)
+            webview.android.getSettings().setCacheMode(2)//(WebSettings.LOAD_NO_CACHE)
+            webview.android.getSettings().setDomStorageEnabled(true)
+            webview.android.setScrollBarStyle(33554432)//(WebView.SCROLLBARS_OUTSIDE_OVERLAY)
+            webview.android.setScrollbarFadingEnabled(true)*/
+
+
+
         }else if(isIOS){
             webview.ios.scrollView.minimumZoomScale = 1.0;
             webview.ios.scrollView.maximumZoomScale = 1.0;
@@ -189,7 +209,9 @@ export class MonitorComponent implements OnInit, OnDestroy{
             console.log(pathDest);
             const saved: boolean = image.saveToFile(pathDest, "png")
             if (saved) {
-                console.log("Image saved successfully!")
+                dialogs.alert("Instantánea almacenada en galeria de fotos").then(()=> {
+                    console.log("Image saved successfully!")
+                })
             }
         })
     }

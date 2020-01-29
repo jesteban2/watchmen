@@ -106,7 +106,9 @@ export class DetailComponent implements OnInit, OnDestroy{
             console.log(pathDest);
             const saved: boolean = image.saveToFile(pathDest, "png")
             if (saved) {
-                console.log("Image saved successfully!")
+                dialogs.alert("Instantánea almacenada en galeria de fotos").then(()=> {
+                    console.log("Image saved successfully!")
+                })
             }
         });
     }

@@ -1,0 +1,10 @@
+{
+    "name": "nativescript-mjpegviewer",
+    "version": "0.0.1",
+    "main": "index.js",
+    "nativescript": {
+      "platforms": {
+        "android": "1.​2.0"
+      }
+    }
+  }

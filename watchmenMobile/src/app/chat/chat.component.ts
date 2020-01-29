@@ -45,7 +45,7 @@ export class ChatComponent implements OnInit, OnDestroy{
     ngAfterViewInit(){
         this.list = this.page.getViewById("list")
         this.textfield = this.page.getViewById("textfield")
-       // this.getChats()
+        this.getChats()
         
     }
 
@@ -69,9 +69,9 @@ export class ChatComponent implements OnInit, OnDestroy{
             },
             (exception) => {
                 if(exception.error && exception.error.description) {
-                    alert(exception.error.description)
+                    console.log(exception.error.description)
                 } else {
-                    alert(exception)
+                    console.log(exception)
                 }
             }
           )
@@ -81,7 +81,7 @@ export class ChatComponent implements OnInit, OnDestroy{
     getChats(){
         this._pollSubscription = inter.pipe(take(31536000))
         .subscribe((x)=>{
-            console.log("****CONSULTA KAFKA NUMERO: "+x)
+            console.log("*****CONSULTA KAFKA NUMERO: "+x)
             let messages:Array<Message>
             this.messageService.getMessages(Config.usrid)
             .subscribe(
@@ -95,9 +95,9 @@ export class ChatComponent implements OnInit, OnDestroy{
                 },
                 (exception) => {
                     if(exception.error && exception.error.description) {
-                        alert(exception.error.description)
+                        console.log(exception.error.description)
                     } else {
-                        alert(exception)
+                        console.log(exception)
                     }
                 }
             )
