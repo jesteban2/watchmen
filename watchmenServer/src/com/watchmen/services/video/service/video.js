@@ -18,7 +18,7 @@ const video = {
             // connect directly to kafka broker (instantiates a KafkaClient)
             kafkaHost: process.env.KAFKA_HOST,
             groupId: 'group-'+usrid+'-'+topic,
-            autoCommitIntervalMs: 500,
+            //autoCommitIntervalMs: 500,
             sessionTimeout: 15000,
             protocol: ['roundrobin'],
             encoding: 'binary',
