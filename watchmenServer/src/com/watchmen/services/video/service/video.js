@@ -24,7 +24,7 @@ const video = {
             encoding: 'binary',
             fromOffset: process.env.KAFKA_FROMOFFSET,
             auto_offset_reset: process.env.KAFKA_FROMOFFSET, 
-            enable_auto_commit: False
+            enable_auto_commit: false
         }
 
         const trans = new Transform({
