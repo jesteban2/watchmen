@@ -22,9 +22,9 @@ const video = {
             sessionTimeout: 15000,
             protocol: ['roundrobin'],
             encoding: 'binary',
-            fromOffset: process.env.KAFKA_FROMOFFSET
-            //auto_offset_reset =process.env.KAFKA_FROMOFFSET, 
-            //enable_auto_commit=False
+            fromOffset: process.env.KAFKA_FROMOFFSET,
+            auto_offset_reset =process.env.KAFKA_FROMOFFSET, 
+            enable_auto_commit=False
         }
 
         const trans = new Transform({
