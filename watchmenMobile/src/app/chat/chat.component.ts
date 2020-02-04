@@ -45,7 +45,7 @@ export class ChatComponent implements OnInit, OnDestroy{
     ngAfterViewInit(){
         this.list = this.page.getViewById("list")
         this.textfield = this.page.getViewById("textfield")
-        this.getChats()
+       // this.getChats()
         
     }
 

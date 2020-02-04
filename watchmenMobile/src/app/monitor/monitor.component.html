@@ -22,8 +22,10 @@
     <ng-template let-item="item">
         <StackLayout class="main">
             <StackLayout class="content">
-               <WebView [id]="item._id" class="card-img" (tap)="showItem($event,item._id)"
-               (loaded)="onWebViewLoaded($event,item._id)"></WebView>     
+                <MjpegView class="card-img" (tap)="showItem($event,item._id)"
+                [src]="item.url"></MjpegView>
+               <!--WebView [id]="item._id" class="card-img" (tap)="showItem($event,item._id)"
+               (loaded)="onWebViewLoaded($event,item._id)"></!--WebView-->     
 				<!--VideoPlayer id="nativeVideoPlayer" autoplay="true" class="card-img" controls="true" debug="true" fill="true"
 				src="http://192.168.1.63:3000/stream/ffmpeg"></VideoPlayer--->
                 <GridLayout width="100%" columns="auto,*" rows="auto,auto"

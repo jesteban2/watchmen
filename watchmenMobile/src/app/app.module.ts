@@ -10,7 +10,7 @@ import { MonitorComponent } from "./monitor/monitor.Component";
 import { DetailComponent } from "./detail/detail.component";
 import { MiddlewareComponent } from "./middleware/middleware.component";
 import { ChatComponent } from "./chat/chat.component"
-import { registerElement } from "nativescript-angular/element-registry";
+import {MjpegViewModule} from "./mjpeg-view/angular"
 
 // Uncomment and add to NgModule imports if you need to use two-way binding
 // import { NativeScriptFormsModule } from "nativescript-angular/forms";
@@ -28,6 +28,7 @@ import { registerElement } from "nativescript-angular/element-registry";
         NativeScriptUIChartModule,
         NativeScriptFormsModule,
         AppRoutingModule,
+        MjpegViewModule,
         NativeScriptHttpClientModule
     ],
     declarations: [

@@ -49,6 +49,8 @@ public class MjpegView extends View{
     private boolean isRecycleBitmap;
     private boolean isUserForceConfigRecycle;
 
+    private boolean isStreaming;
+
     public MjpegView(Context context){
         super(context);
         this.context = context;
@@ -64,6 +66,7 @@ public class MjpegView extends View{
     private void init(){
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         dst = new Rect(0,0,0,0);
+        this.isStreaming = false;
     }
 
     public void setUrl(String url){
@@ -75,13 +78,22 @@ public class MjpegView extends View{
             Log.w(tag,"Already started, stop by calling stopStream() first.");
             return;
         }
-
-        downloader = new MjpegDownloader();
+        this.isStreaming = true;
+        downloader = new MjpegDownloader(this.url);
         downloader.start();
     }
 
     public void stopStream(){
         downloader.cancel();
+        this.isStreaming = false;
+    }
+
+    public boolean isStreaming(){
+        return this.isStreaming;
+    }
+
+    public String getUrl(){
+        return this.url;
     }
 
     public int getMode() {
@@ -293,6 +305,11 @@ public class MjpegView extends View{
     class MjpegDownloader extends Thread{
 
         private boolean run = true;
+        private String murl;
+
+        public MjpegDownloader(String mpegurl){
+            this.murl = mpegurl;
+        }
 
         public void cancel(){
             run = false;
@@ -311,7 +328,7 @@ public class MjpegView extends View{
                 URL serverUrl = null;
 
                 try {
-                    serverUrl = new URL(url);
+                    serverUrl = new URL(this.murl);
 
                     connection = (HttpURLConnection) serverUrl.openConnection();
                     connection.setDoInput(true);
