@@ -18,11 +18,14 @@ const videoStream = {
             // connect directly to kafka broker (instantiates a KafkaClient)
             kafkaHost: 'localhost:9092',
             groupId: 'group-otro',
-            autoCommitIntervalMs: 500,
+            //enable_auto_commit: false,
+            autoCommit: false,
+            //autoCommitIntervalMs: 500,
             sessionTimeout: 15000,
             protocol: ['roundrobin'],
             encoding: 'binary',
-            fromOffset: 'earliest'
+            fromOffset: 'latest',
+            commitOffsetsOnFirstJoin: false
             };
         const trans = new Transform({
             objectMode:true,
@@ -35,12 +38,25 @@ const videoStream = {
             }
         })
 
+        const consumerClient = new kafka.KafkaClient('localhost:9092');
+
+        /* Print latest offset. */
+        var offset = new kafka.Offset(consumerClient);
+        //var topic='movieTestBytes'
+
+        offset.fetch([{ topic: 'movieTestBytes', partition: 0, time: -1 }], function (err, data) {
+                var latestOffset = data['movieTestBytes']['0'][0];
+                console.log("Consumer current offset: " + latestOffset);
+        });
+
+        
+
         const consumerGroupStream = new kafka.ConsumerGroupStream(Object.assign({ id: 'cons-otro' }, options),'movieTestBytes')
         consumerGroupStream.on('message',function onMessage(message){})
         .pipe(trans).pipe(res)
 
         consumerGroupStream.on('error', function onError(error) {
-            console.error(error);
+            console.error("no se que fue"+error);
             res.send(error);
         })
 

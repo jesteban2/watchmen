@@ -55,8 +55,21 @@ export class DetailComponent implements OnInit, OnDestroy{
       }
     
       onNavBtnTap(){
+          console.log("nav atras")
           this.page.frame.goBack()
       }
+
+        onMjpegViewLoaded(webargs) {
+            console.log("Hombre hubo loaded")
+            const mjpegview = webargs.object
+            mjpegview.startStream()
+        }
+
+        onMjpegViewUnloaded(webargs) {
+            console.log("Hombre hubo unloaded")
+            const mjpegview = webargs.object
+            mjpegview.stopStream()
+        }
 
       onLoadFinished(webargs) {
         console.log("load finished viewport")

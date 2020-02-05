@@ -18,12 +18,14 @@
 
 <GridLayout rows="*" columns="auto">
 <GridLayout  width="100%" backgroundColor="#000000">
-<ListView #listview [items]="items" separatorColor="transparent">
-    <ng-template let-item="item">
+<ListView #listview [items]="items" separatorColor="transparent" [itemTemplateSelector]="templateSelector"
+(pan)="panList($event)">
+    <ng-template let-item="item" let-i="index" nsTemplateKey="default">
         <StackLayout class="main">
             <StackLayout class="content">
-                <MjpegView class="card-img" (tap)="showItem($event,item._id)"
-                [src]="item.url"></MjpegView>
+                <MjpegView [id]="item._id" class="card-img" (tap)="showItem($event,item._id)"
+                [src]="item.url" (loaded)="onMjpegViewLoaded($event,item._id)" 
+                (unloaded)="onMjpegViewUnloaded($event,item._id)"></MjpegView>
                <!--WebView [id]="item._id" class="card-img" (tap)="showItem($event,item._id)"
                (loaded)="onWebViewLoaded($event,item._id)"></!--WebView-->     
 				<!--VideoPlayer id="nativeVideoPlayer" autoplay="true" class="card-img" controls="true" debug="true" fill="true"

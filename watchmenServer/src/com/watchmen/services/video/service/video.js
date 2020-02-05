@@ -12,19 +12,16 @@ const video = {
 
         }
         res.writeHead(206, head)
-        //res.send(`<meta name='viewport' content='width=device-width, initial-scale=1'>`)
-
+        
         const options = {
-            // connect directly to kafka broker (instantiates a KafkaClient)
             kafkaHost: process.env.KAFKA_HOST,
             groupId: 'group-'+usrid+'-'+topic,
-            //autoCommitIntervalMs: 500,
+            autoCommit: false,
             sessionTimeout: 15000,
             protocol: ['roundrobin'],
             encoding: 'binary',
             fromOffset: process.env.KAFKA_FROMOFFSET,
-            auto_offset_reset: process.env.KAFKA_FROMOFFSET, 
-            enable_auto_commit: false
+            commitOffsetsOnFirstJoin: false
         }
 
         const trans = new Transform({
@@ -37,7 +34,7 @@ const video = {
                 callback(null,Buffer.from(msg,'binary'))
             }
         })
-        
+
         const consumerGroupStream = new kafka.ConsumerGroupStream(Object.assign({ id: 'cons-'+usrid+'-'+topic }, options)
                                                                     ,topic)
         consumerGroupStream.on('message',function onMessage(message){})

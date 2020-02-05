@@ -20,8 +20,12 @@ import * as fs from "tns-core-modules/file-system"
 import * as permissions from 'nativescript-permissions'
 import { UserService } from "./../shared/user/user.service"
 
-declare var android: any;
+import { GestureStateTypes } from "tns-core-modules/ui/gestures";
+import { MjpegView } from "../mjpeg-view/mjpeg-view";
 
+
+declare var android: any
+let focus:Array<String>
 
 @Component({
     selector: "ns-monitor",
@@ -32,6 +36,7 @@ declare var android: any;
 })
 export class MonitorComponent implements OnInit, OnDestroy{
     private _paramSubscription: any
+    
     usrid:String
     devids:String
     items: Array<Camera>
@@ -44,6 +49,7 @@ export class MonitorComponent implements OnInit, OnDestroy{
                 private page:Page){
             
         this.items=[]
+        focus=[]
         this._paramSubscription=this.activatedRoute.params.subscribe(params=>{
             this.usrid=params['usrid']
             this.devids=params['devids']
@@ -72,6 +78,7 @@ export class MonitorComponent implements OnInit, OnDestroy{
 
     ngOnDestroy(){
         console.log("vista destruida**********************")
+        
 
         /*this.items.forEach(item=>{
             const webview = <any>this.page.getViewById(item._id.toString())
@@ -90,6 +97,7 @@ export class MonitorComponent implements OnInit, OnDestroy{
             (data) => {
                 this.item = <Camera>data
                 this.item.url = Config.videoApiUrl+"/"+this.item.kafkaTopic+"/"+this.usrid
+                this.item.__v = 0
                 this.items.push(<Camera>data)
             },
             (exception) => {
@@ -104,7 +112,9 @@ export class MonitorComponent implements OnInit, OnDestroy{
 
     showItem(webargs,itemId) {
         const webview = webargs.object
-        webview.src = "<!DOCTYPE html><html><head><meta charset='utf-8' /></head><body></body></html>"
+        //webview.src = "<!DOCTYPE html><html><head><meta charset='utf-8' /></head><body></body></html>-"
+        webview.stopStream()
+        //this.closeWebviews()
         const selItem:Camera = this.items.filter(item=>item._id==itemId)[0]
         console.log("El seleccionado"+selItem.url)
         const navigationExtras: NavigationExtras = {
@@ -123,8 +133,54 @@ export class MonitorComponent implements OnInit, OnDestroy{
         console.log("View init")
        
     }
+    templateSelector(item:Camera, index:number, items:Array<Camera>){
+        const inFocus = focus.find((elm)=>elm==item._id)
+        if(inFocus==undefined){
+            focus.push(item._id)
+        }
+        return "default"
+    }
 
-    
+
+    panList(args){
+        if(args.state==GestureStateTypes.ended){
+            this.streamCleaner()
+        }
+    }
+
+    streamCleaner(){
+        this.items.forEach(item=>{
+            const mjpeg:any = this.page.getViewById(item._id.toString())
+            if(mjpeg!=undefined){
+                const camId = focus.find(x=>x==item._id)
+                if(camId==undefined){   
+                        mjpeg.stopStream()
+                }else{
+                    mjpeg.startStream()
+                }
+            }
+        })
+        focus=[]
+    }
+
+    onMjpegViewLoaded(webargs,itemId) {
+        console.log("Hombre hubo loaded")
+        const mjpegview = webargs.object
+        //console.log("Is Shown Loaded: "+mjpegview.src+" "+mjpegview.isShown())
+        const camId = focus.find(x=>x==itemId)
+        if(camId==undefined){
+            mjpegview.stopStream()
+        }else{
+            mjpegview.startStream()
+        }
+    }
+
+    onMjpegViewUnloaded(webargs,itemId) {
+        console.log("Hombre hubo unloaded")
+        const mjpegview = webargs.object
+        //console.log("Is Shown Unloaded: "+mjpegview.src+" "+mjpegview.isShown())
+        mjpegview.stopStream()
+    }
 
     onWebViewLoaded(webargs,itemId) {
         console.log("load finished viewport")
@@ -231,6 +287,12 @@ export class MonitorComponent implements OnInit, OnDestroy{
     closeWebviews(){
      //   const webview = webargs.object
      //   webview.src = "<!DOCTYPE html><html><head><meta charset='utf-8' /></head><body></body></html>"
+        this.items.forEach(item=>{
+            const cam:Camera=<Camera>item
+            const mjpeg:any = this.page.getViewById(cam._id.toString())
+            mjpeg.stopStream()
+            
+        })
     }
     
 }

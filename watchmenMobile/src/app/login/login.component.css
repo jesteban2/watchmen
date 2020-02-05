@@ -14,6 +14,12 @@ FlexboxLayout {
     margin-bottom: 20;
     height: 70;
   }
+
+  .Soluimage {
+    width: 130;
+    height: 75;
+  }
+
   Button, TextField {
     margin-bottom: 10;
   }

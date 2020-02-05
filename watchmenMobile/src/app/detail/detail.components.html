@@ -9,7 +9,10 @@
 <GridLayout rows="*" columns="auto">
     <GridLayout  width="100%" backgroundColor="#000000">
         <StackLayout class="content">
-            <WebView [id]="videoId"   [src]="videoUrl" class="card-img" (loaded)="onLoadFinished($event)"></WebView>
+            <MjpegView [id]="videoId" [src]="videoUrl" class="card-img"
+            (loaded)="onMjpegViewLoaded($event)" 
+            (unloaded)="onMjpegViewUnloaded($event)"></MjpegView>
+            <!--WebView [id]="videoId"   [src]="videoUrl" class="card-img" (loaded)="onLoadFinished($event)"></!--WebView-->
             <GridLayout width="100%" columns="auto,*" rows="auto,auto"
                 class="" verticalAlignment="center">
                 <Label [text]="categoryIcon('Picture')" row="0"

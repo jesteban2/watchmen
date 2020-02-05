@@ -24,5 +24,9 @@ export class MjpegView extends View {
 
     stopStream(): void;
 
+    isStreaming(): boolean;
+
+    isShown(): boolean;
+
      
 }

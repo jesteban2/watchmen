@@ -18,13 +18,13 @@ const user = {
             const { usrid, password } = req.body
             const user = await User.findByCredentials(usrid, password)
             if (!user) {
-                return res.status(401).send({error: 'Login failed! Check authentication credentials'})
+                return res.status(401).send({error: 'Error en logueo! Verifique sus credenciales'})
             }
             const token = await user.generateAuthToken()
             res.send({ user, token })
         } catch (error) {
            // res.status(400).send(error)
-           return res.status(401).send({error: 'Login failed! Check authentication credentials'})
+           return res.status(401).send({error: 'Error en logueo! Verifique sus credenciales'})
         }
     },
 
