@@ -26,7 +26,7 @@ object VideoStreamer extends App {
 
   val config = actorSystem.settings.config.getConfig("akka.kafka.producer")
   val devices = Settings(actorSystem).devices
-  val imageDimensions = Dimensions(width = 192, height = 108)
+  val imageDimensions = Dimensions(width = 768, height = 432)
   val webcamSource = devices.map( device => VideoReader.source(deviceId = device.url, dimensions = imageDimensions, options = Map("rtsp_transport" -> "tcp"))
     .map(MediaConversion.toBytes)
     .map(s => new ProducerRecord[String,Array[Byte]](device.name, s))
