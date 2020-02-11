@@ -1,5 +1,5 @@
 
-<ActionBar title="Video Monitor">
+<ActionBar title="Seguridad Incluyente">
     <ActionItem (tap)="logOut()" ios.systemIcon="14" ios.position="right"
                 android.systemIcon="ic_menu_close_clear_cancel" android.position="actionBar">
     </ActionItem>
@@ -7,7 +7,7 @@
 </ActionBar>
 
 <GridLayout rows="*" columns="auto">
-    <GridLayout  width="100%" backgroundColor="#000000">
+    <GridLayout  width="100%">
         <StackLayout class="content">
             <MjpegView [id]="videoId" [src]="videoUrl" class="card-img"
             (loaded)="onMjpegViewLoaded($event)" 

@@ -12,7 +12,7 @@ const routes: Routes = [
    // { path: "login", component: LoginComponent }
    {path: "", component: LoginComponent},
    {path: "middleware/:usrid", component: MiddlewareComponent},
-   {path: "monitor/:usrid/:devids", component: MonitorComponent},
+   {path: "monitor/:usrid/:groupids", component: MonitorComponent},
    {path: "detail", component: DetailComponent }
 ];
 

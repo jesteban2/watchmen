@@ -32,8 +32,12 @@ router.post('/user-device/create',auth,controller.userDeviceCreate)
 
 router.get('/user-device/search'+'/:usrid',auth,controller.userDeviceSearch)
 
-router.post('/message'+'/:usrid',auth,controller.messagePost)
+router.post('/message'+'/:groupid',auth,controller.messagePost)
 
-router.get('/message'+'/:usrid',auth,controller.messageGet)
+router.get('/message'+'/:usrid'+'/:groupid',auth,controller.messageGet)
+
+router.post('/group/create',auth,controller.groupCreate)
+
+router.get('/group/search'+'/:groupid',auth,controller.groupSearch)
 
 module.exports = router

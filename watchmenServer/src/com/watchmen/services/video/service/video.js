@@ -1,11 +1,39 @@
 const kafka = require("kafka-node")
 const { Transform } = require("stream")
+const jwt = require('jsonwebtoken')
+const User = require('../../user/model/User')
 
 const video = {
 
     play: function(req,res,next){
-        const topic = req.params.topic
-        const usrid = req.params.usrid
+        const token = req.params.usrid
+        auth(req,res,token,function(){
+            stream(req,res,next)
+        })
+    }
+}
+
+module.exports = video
+
+const auth = async(req, res,token, next) => {
+    try {
+        const data = jwt.verify(token, process.env.JWT_KEY)
+        const user = await User.findOne({ _id: data._id, 'tokens.token': token })
+        if (!user) {
+            throw new Error()
+        }
+        req.user = user
+        req.token = token
+        next()
+    } catch (error) {
+        res.status(401).send({ error: 'Not authorized to access this resource' })
+    }
+
+}
+
+const stream = function(req,res,next) {
+    const topic = req.params.topic
+    const usrid = req.user.usrid
     
         const head = {
             'Content-Type': 'multipart/x-mixed-replace; boundary=myframe'
@@ -46,9 +74,9 @@ const video = {
         })
 
         req.on('close',function(){
-            consumerGroupStream.close(function(err,result){console.log("consumer closed")})
+            consumerGroupStream.close(function(err,result){
+                console.log("consumer closed")
+            })
         })
-    }
-}
 
-module.exports = video
+}

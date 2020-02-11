@@ -36,8 +36,8 @@ export class ChatComponent implements OnInit, OnDestroy{
     }
 
     ngOnDestroy(){
-        console.log("Se limpia el intervalo")
         if(this._pollSubscription){
+            console.log("Se limpia el intervalo")
             this._pollSubscription.unsubscribe()
         }
     }
@@ -45,12 +45,11 @@ export class ChatComponent implements OnInit, OnDestroy{
     ngAfterViewInit(){
         this.list = this.page.getViewById("list")
         this.textfield = this.page.getViewById("textfield")
-       // this.getChats()
+        this.getChats()
         
     }
 
     scroll(count:number){
-        console.log("scrolling to ", count)
         this.list.scrollToIndex(count-1);
         this.list.refresh();
      }
@@ -62,7 +61,7 @@ export class ChatComponent implements OnInit, OnDestroy{
         message.sender_id = Config.usrid
         message.sender_name = Config.usrnam
         message.value = msgtxt 
-        this.messageService.sendMessage(Config.usrid,message)
+        this.messageService.sendMessage(Config.group,message)
         .subscribe(
             () => {
                 //this.messageHandle(message)
@@ -81,9 +80,9 @@ export class ChatComponent implements OnInit, OnDestroy{
     getChats(){
         this._pollSubscription = inter.pipe(take(31536000))
         .subscribe((x)=>{
-            console.log("*****CONSULTA KAFKA NUMERO: "+x)
+            //console.log("*****CONSULTA KAFKA NUMERO: "+x)
             let messages:Array<Message>
-            this.messageService.getMessages(Config.usrid)
+            this.messageService.getMessages(Config.usrid,Config.group)
             .subscribe(
                 (data) => {
                     messages = <any>data

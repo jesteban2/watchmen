@@ -1,10 +1,12 @@
-.fa {
-    font-family: "FontAwesome"
+ActionBar{
+    color:#00134d;
 }
 
-.ActionBar{
-    background-color: black;
-    color: white;
+GridLayout{
+    background-color: white;
+}
+.fa {
+    font-family: "FontAwesome"
 }
 
 .card-img {
@@ -22,14 +24,14 @@
 .item-name {
     font-size: 14;
     font-weight: bold;
-    color: white;
+    color: black;
 }
 
 .category-icon {
     text-align: center;
     padding-top: 5;
-    color: white;
-    border-color: white;
+    color: black;
+    border-color: black;
     vertical-align: center;
     font-size: 25;
     border-width: 1;
@@ -43,6 +45,5 @@
 .content {
     margin-left: 16;
     margin-right: 16;
-    margin-bottom: 3;
-    margin-top: 16;
+    vertical-align: center;
 }

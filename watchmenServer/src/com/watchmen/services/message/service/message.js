@@ -12,7 +12,7 @@ const message = {
             const client = new kafka.KafkaClient({kafkaHost: process.env.KAFKA_HOST});
             const producer = new Producer(client)
             const message = new Message(req.body)
-            const topic = "msgroup_1"
+            const topic = req.params.groupid
 
             console.log("Connecting to kafka server: "+process.env.KAFKA_HOST)
             console.log("sending message: \n"+JSON.stringify(message))
@@ -41,7 +41,7 @@ const message = {
 
     get: function(req,res,next){
         const usrid = req.params.usrid
-        const topic = "msgroup_1"
+        const topic = req.params.groupid
         const options = {
             // connect directly to kafka broker (instantiates a KafkaClient)
             kafkaHost: process.env.KAFKA_HOST,
@@ -70,8 +70,12 @@ const message = {
             //const aux = message.value.replace(/(\r\n|\n|\r)/gm,"")
             messages.push(message.value)
             if(message.offset==(message.highWaterOffset-1)){
-                consumerGroup.commit(function(err,data){console.log("consumer commit")})
-                consumerGroup.close(function(err,result){console.log("consumer closed")})
+                consumerGroup.commit(function(err,data){
+                    //console.log("consumer commit")
+                })
+                consumerGroup.close(function(err,result){
+                    //console.log("consumer closed")
+                })
                 res.status(200).send(messages)
             }
         })
@@ -82,7 +86,9 @@ const message = {
         })
 
         req.on('close',function(){
-            consumerGroup.close(function(err,result){console.log("consumer closed")})
+            consumerGroup.close(function(err,result){
+                //console.log("consumer closed")
+            })
         })
     }
 }

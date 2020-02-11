@@ -1,3 +1,11 @@
+ActionBar{
+    color:#00134d;
+}
+
+TabView{
+    background: white;
+}
+
 .home-panel{
     vertical-align: center; 
     font-size: 20;
@@ -113,7 +121,7 @@
     .item-name {
         font-size: 14;
         font-weight: bold;
-        color: white;
+        color: black;
     }
 
     .item-category {
@@ -124,8 +132,8 @@
     .category-icon {
         text-align: center;
         padding-top: 5;
-        color: white;
-        border-color: white;
+        color: black;
+        border-color: black;
         vertical-align: center;
         font-size: 25;
         border-width: 1;
@@ -147,6 +155,9 @@
         width: 100%;
         height: 200;
         margin-bottom: 2;
+        -webkit-border-radius: 40px;
+        -moz-border-radius: 40px;
+        border-radius: 40px;
     }
 
     .line {
@@ -157,10 +168,9 @@
     }
 
     .lineBreak {
-        height: 7;
+        height: 2;
         border: none;
-        color: #3333ff;
-        background-color: #99b3ff;
+        background-color: #737373;
     }
 
         .default-img {

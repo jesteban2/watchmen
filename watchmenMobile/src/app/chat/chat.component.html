@@ -6,7 +6,7 @@
                 <StackLayout [class]="filter(item.sender_id)" orientation="horizontal" [horizontalAlignment]="align(item.sender_id)">
                     <StackLayout [class]="filter(item.sender_id)" orientation="vertical">
                         <!--Image [visibility]="showImage(item.sender)" class="authorimg" stretch="aspectFill" height="30" width="30" verticalAlignment="top" src="~/images/k1.png" col="1"></Image-->
-                        <Label [text]='item.sender_name' [class]="msg_class_sname(item.sender_id)" textWrap="true" verticalAlignment="top" horizontalAlignment="left"></Label>
+                        <Label [text]='item.sender_name' [id]="msg_class_sname(item.sender_id)" [class]="msg_class_sname(item.sender_id)" textWrap="true" verticalAlignment="top" horizontalAlignment="left"></Label>
                         <Label [text]='item.value' [class]="msg_class(item.sender_id)" textWrap="true" verticalAlignment="top"></Label>
                     </StackLayout>
                 </StackLayout>

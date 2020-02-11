@@ -27,9 +27,9 @@ export class MessageService {
         return throwError(error);
     }
 
-    sendMessage(usrid:String,msg: Message) {
+    sendMessage(groupid:String,msg: Message) {
         return this.http.post(
-            Config.messageApiUrl+"/"+usrid,
+            Config.messageApiUrl+"/"+groupid,
             JSON.stringify({
                 type: msg.type,
                 date: msg.date,
@@ -45,9 +45,9 @@ export class MessageService {
         );
     }
 
-    getMessages(usrid:String){
+    getMessages(usrid:String, groupid:String){
         return this.http.get(
-            Config.messageApiUrl+"/"+usrid,
+            Config.messageApiUrl+"/"+usrid+"/"+groupid,
             { headers: this.getCommonHeaders() }
         ).pipe(
             map(response => response),

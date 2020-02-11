@@ -42,6 +42,7 @@ export class UserService {
                 Config.token = (<any>data).user.tokens[0].token
                 Config.usrid = (<any>data).user.usrid
                 Config.usrnam = (<any>data).user.name
+                Config.groups = (<any>data).user.groups
             }),
             catchError(this.handleErrors)
         );

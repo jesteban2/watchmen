@@ -5,6 +5,7 @@ const videoStream = require('../services/video/service/videoStream')
 const videoffmpeg = require('../services/video/service/videoffmpeg')
 const user = require('../services/user/service/user') 
 const device = require('../services/device/service/device')
+const group = require('../services/group/service/group')
 const userDevice = require('../services/userDevice/service/userDevice')
 const message = require('../services/message/service/message')
 
@@ -66,6 +67,18 @@ const controllers = {
 
     deviceSearch: function(req,res){
         device.search(req,res, function(err,stream){
+            if(err){res.send(err)}
+        })
+    },
+
+    groupCreate: function(req,res){
+        group.create(req,res, function(err,stream){
+            if(err){res.send(err)}
+        })
+    },
+
+    groupSearch: function(req,res){
+        group.search(req,res, function(err,stream){
             if(err){res.send(err)}
         })
     },

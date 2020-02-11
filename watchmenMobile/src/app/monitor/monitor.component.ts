@@ -4,6 +4,9 @@ import { Page } from "ui/page";
 
 import {Camera} from "../shared/camera/camera.model"
 import {CameraService} from "../shared/camera/camera.service"
+
+import {Group} from "../shared/group/group.model"
+import {GroupService} from "../shared/group/group.service"
 import { Config } from "../shared/config"
 
 import { registerElement } from "nativescript-angular/element-registry"
@@ -30,7 +33,7 @@ let focus:Array<String>
 @Component({
     selector: "ns-monitor",
     moduleId: module.id,
-    providers:[CameraService, UserService],
+    providers:[CameraService, UserService, GroupService],
     templateUrl: "./monitor.component.html",
     styleUrls: ["./monitor.component.css"]
 })
@@ -38,31 +41,35 @@ export class MonitorComponent implements OnInit, OnDestroy{
     private _paramSubscription: any
     
     usrid:String
-    devids:String
+    groupids:String
     items: Array<Camera>
     item:Camera
+    group:Group
     videoPlayer: any
     constructor(private router: Router,
                 private cameraService:CameraService,
+                private groupService:GroupService,
                 private activatedRoute:ActivatedRoute,
                 private userService:UserService,
                 private page:Page){
             
         this.items=[]
         focus=[]
+        console.log("Entra a Monitor")
         this._paramSubscription=this.activatedRoute.params.subscribe(params=>{
             this.usrid=params['usrid']
-            this.devids=params['devids']
+            this.groupids=params['groupids']
+            console.log("Entra a Monitor"+this.usrid+this.groupids)
         })
-        this.devids.split(",").forEach(devid=>{
-            console.log(devid)
-            this.getCameraDetail(devid)
+        this.groupids.split(",").forEach(groupid=>{
+            Config.group=groupid
+            this.getGroupDetail(groupid)
         })
     }
 
     ngOnInit(){
 
-        this.checkAuth()
+       // this.checkAuth()
 
        // this.page.actionBarHidden = true;;
        if(isAndroid){
@@ -91,12 +98,31 @@ export class MonitorComponent implements OnInit, OnDestroy{
         };
       }
 
+    getGroupDetail(groupid:String){
+        this.groupService.getGroup(groupid)
+        .subscribe(
+            (data) => {
+                (<any>data).devices.forEach(devid=>{
+                    console.log("Device: "+devid)
+                    this.getCameraDetail(devid)
+                })
+            },
+            (exception) => {
+                if(exception.error && exception.error.description) {
+                    alert(exception.error.description);
+                } else {
+                    alert(exception)
+                }
+            }
+        )
+    }
+    
     getCameraDetail(devid:String){
         this.cameraService.getCameraDetail(devid)
         .subscribe(
             (data) => {
                 this.item = <Camera>data
-                this.item.url = Config.videoApiUrl+"/"+this.item.kafkaTopic+"/"+this.usrid
+                this.item.url = Config.videoApiUrl+"/"+this.item.kafkaTopic+"/"+Config.token
                 this.item.__v = 0
                 this.items.push(<Camera>data)
             },
@@ -142,7 +168,7 @@ export class MonitorComponent implements OnInit, OnDestroy{
     }
 
 
-    panList(args){
+    panListener(args){
         if(args.state==GestureStateTypes.ended){
             this.streamCleaner()
         }
@@ -164,9 +190,8 @@ export class MonitorComponent implements OnInit, OnDestroy{
     }
 
     onMjpegViewLoaded(webargs,itemId) {
-        console.log("Hombre hubo loaded")
+        console.log("MjpegView Loaded")
         const mjpegview = webargs.object
-        //console.log("Is Shown Loaded: "+mjpegview.src+" "+mjpegview.isShown())
         const camId = focus.find(x=>x==itemId)
         if(camId==undefined){
             mjpegview.stopStream()
@@ -176,9 +201,8 @@ export class MonitorComponent implements OnInit, OnDestroy{
     }
 
     onMjpegViewUnloaded(webargs,itemId) {
-        console.log("Hombre hubo unloaded")
+        console.log("MjpegView Unloaded")
         const mjpegview = webargs.object
-        //console.log("Is Shown Unloaded: "+mjpegview.src+" "+mjpegview.isShown())
         mjpegview.stopStream()
     }
 
